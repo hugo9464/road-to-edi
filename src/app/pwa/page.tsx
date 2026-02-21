@@ -122,40 +122,6 @@ export default function PWAPage() {
       })()
     : 'Never sent'
 
-  // PIN screen
-  if (!authenticated) {
-    return (
-      <div className="flex min-h-dvh items-center justify-center bg-[#1a1a2e] p-4">
-        <div className="w-full max-w-xs space-y-4 text-center">
-          <h1 className="text-2xl font-bold text-white">Road to Edi</h1>
-          <p className="text-sm text-gray-400">Enter PIN to access GPS tracker</p>
-          <input
-            type="password"
-            inputMode="numeric"
-            value={pin}
-            onChange={(e) => {
-              setPin(e.target.value)
-              setPinError(false)
-            }}
-            onKeyDown={(e) => e.key === 'Enter' && handlePin()}
-            placeholder="PIN"
-            className="w-full rounded-lg border border-gray-600 bg-[#16213e] px-4 py-3 text-center text-xl tracking-widest text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
-          />
-          {pinError && (
-            <p className="text-sm text-red-400">Incorrect PIN</p>
-          )}
-          <button
-            onClick={handlePin}
-            className="w-full rounded-lg bg-blue-600 px-4 py-3 font-medium text-white transition hover:bg-blue-700 active:bg-blue-800"
-          >
-            Unlock
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // Tracker screen
   return (
     <div className="flex min-h-dvh flex-col bg-[#1a1a2e] p-6 text-white">
       <h1 className="mb-6 text-center text-xl font-bold">Road to Edi - GPS Tracker</h1>
