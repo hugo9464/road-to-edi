@@ -8,6 +8,9 @@ export default function Navbar() {
   const t = useTranslations('nav');
   const pathname = usePathname();
   const params = useParams();
+
+  // SPA home page: no navbar
+  if (pathname === '/') return null;
   const locale = params.locale as string;
   const otherLocale = locale === 'fr' ? 'en' : 'fr';
 

@@ -15,6 +15,8 @@ export interface Post {
   published_at: string
   day: number | null
   location: string | null
+  lat: number | null
+  lng: number | null
   cover_image_url: string | null
   body_markdown: string
   created_at: string

@@ -31,6 +31,8 @@ CREATE TABLE IF NOT EXISTS posts (
   published_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   day              INTEGER,
   location         TEXT,
+  lat              DOUBLE PRECISION,
+  lng              DOUBLE PRECISION,
   cover_image_url  TEXT,
   body_markdown    TEXT NOT NULL DEFAULT '',
   created_at       TIMESTAMPTZ DEFAULT NOW(),
