@@ -1,0 +1,74 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "map": "Carte",
+    "blog": "Journal",
+    "about": "À propos",
+    "fundraising": "Soutenir",
+    "switchLang": "EN"
+  },
+  "home": {
+    "title": "Road to Edi",
+    "subtitle": "Paris → Édimbourg à vélo",
+    "tagline": "Un voyage de 1 800 km pour soutenir «\u00a0Le souci des nôtres\u00a0»",
+    "ctaMap": "Suivre l'aventure",
+    "ctaDonate": "Soutenir la cause",
+    "statsKm": "km parcourus",
+    "statsDay": "Jour",
+    "statsOf": "sur",
+    "statsCountry": "Pays traversé",
+    "latestPosts": "Dernières nouvelles",
+    "viewAll": "Voir tout le journal"
+  },
+  "map": {
+    "title": "Carte & Progression",
+    "kmProgress": "km parcourus",
+    "dayCounter": "Jour",
+    "completed": "Complété",
+    "remaining": "Restant",
+    "noPosition": "En attente de la position GPS…",
+    "liveUpdate": "Mise à jour en direct"
+  },
+  "blog": {
+    "title": "Journal de bord",
+    "day": "Jour",
+    "readMore": "Lire la suite",
+    "backToBlog": "← Retour au journal",
+    "noPosts": "Aucun article pour l'instant. Revenez bientôt !"
+  },
+  "about": {
+    "title": "À propos",
+    "bio": "Biographie",
+    "route": "L'itinéraire",
+    "links": "Liens"
+  },
+  "fundraising": {
+    "title": "Soutenir la cause",
+    "association": "L'association",
+    "progress": "Progression",
+    "raised": "récoltés",
+    "goal": "objectif",
+    "donate": "Faire un don",
+    "comingSoon": "Lien de don bientôt disponible"
+  },
+  "footer": {
+    "madeWith": "Fait avec ❤️ sur la route",
+    "instagram": "Instagram",
+    "donate": "Faire un don"
+  },
+  "pwa": {
+    "title": "Road to Edi Tracker",
+    "pinLabel": "Code PIN",
+    "pinPlaceholder": "Entrez le code PIN",
+    "pinSubmit": "Accéder",
+    "pinError": "Code PIN incorrect",
+    "status": "Statut GPS",
+    "lastSent": "Dernière position envoyée",
+    "never": "Jamais",
+    "ago": "il y a",
+    "minutes": "min",
+    "sendNow": "Envoyer maintenant",
+    "connected": "Connecté",
+    "disconnected": "Déconnecté"
+  }
+}

@@ -1,0 +1,214 @@
+'use client'
+
+import { useEffect, useState, useMemo } from 'react'
+import { MapContainer, TileLayer, Polyline, CircleMarker } from 'react-leaflet'
+import type { LatLngExpression } from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+import { createClient } from '@/lib/supabase/client'
+import type { GpsPosition } from '@/lib/supabase/types'
+
+// Fix Leaflet default icon issue in Next.js
+import L from 'leaflet'
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+})
+
+interface FeatureCollection {
+  type: 'FeatureCollection'
+  features: Array<{
+    type: 'Feature'
+    properties: { name: string; totalKm: number; [key: string]: unknown }
+    geometry: { type: 'LineString'; coordinates: [number, number][] }
+  }>
+}
+
+interface JourneyMapProps {
+  initialPosition: GpsPosition | null
+  routeGeoJson: FeatureCollection
+}
+
+function findNearestPointIndex(
+  coordinates: [number, number][],
+  lat: number,
+  lng: number
+): number {
+  let minDist = Infinity
+  let minIndex = 0
+  for (let i = 0; i < coordinates.length; i++) {
+    const [cLng, cLat] = coordinates[i]
+    const dist = (cLat - lat) ** 2 + (cLng - lng) ** 2
+    if (dist < minDist) {
+      minDist = dist
+      minIndex = i
+    }
+  }
+  return minIndex
+}
+
+function estimateKmProgress(
+  coordinates: [number, number][],
+  nearestIndex: number,
+  totalKm: number
+): number {
+  if (coordinates.length < 2) return 0
+  const fraction = nearestIndex / (coordinates.length - 1)
+  return Math.round(fraction * totalKm)
+}
+
+function RouteLayer({
+  routeGeoJson,
+  position,
+}: {
+  routeGeoJson: FeatureCollection
+  position: GpsPosition | null
+}) {
+  const feature = routeGeoJson.features[0]
+  if (!feature) return null
+
+  const coordinates = feature.geometry.coordinates
+  const totalKm = feature.properties.totalKm
+
+  const { completed, remaining, kmProgress } = useMemo(() => {
+    if (!position) {
+      return {
+        completed: [] as LatLngExpression[],
+        remaining: coordinates.map(
+          ([lng, lat]) => [lat, lng] as LatLngExpression
+        ),
+        kmProgress: 0,
+      }
+    }
+
+    const nearestIdx = findNearestPointIndex(
+      coordinates,
+      position.lat,
+      position.lng
+    )
+    const km = estimateKmProgress(coordinates, nearestIdx, totalKm)
+
+    const completedCoords = coordinates
+      .slice(0, nearestIdx + 1)
+      .map(([lng, lat]) => [lat, lng] as LatLngExpression)
+    const remainingCoords = coordinates
+      .slice(nearestIdx)
+      .map(([lng, lat]) => [lat, lng] as LatLngExpression)
+
+    return { completed: completedCoords, remaining: remainingCoords, kmProgress: km }
+  }, [coordinates, position, totalKm])
+
+  return (
+    <>
+      {completed.length > 1 && (
+        <Polyline
+          positions={completed}
+          pathOptions={{ color: '#3b82f6', weight: 4 }}
+        />
+      )}
+      {remaining.length > 1 && (
+        <Polyline
+          positions={remaining}
+          pathOptions={{ color: '#9ca3af', weight: 3, dashArray: '8 8' }}
+        />
+      )}
+    </>
+  )
+}
+
+function CurrentPositionMarker({ position }: { position: GpsPosition }) {
+  return (
+    <CircleMarker
+      center={[position.lat, position.lng]}
+      radius={8}
+      pathOptions={{
+        color: '#3b82f6',
+        fillColor: '#3b82f6',
+        fillOpacity: 0.8,
+        weight: 2,
+      }}
+      className="pulse-marker"
+    />
+  )
+}
+
+export default function JourneyMap({
+  initialPosition,
+  routeGeoJson,
+}: JourneyMapProps) {
+  const [position, setPosition] = useState<GpsPosition | null>(initialPosition)
+
+  // Supabase Realtime subscription
+  useEffect(() => {
+    const supabase = createClient()
+    const channel = supabase
+      .channel('gps_positions')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'gps_positions' },
+        (payload) => {
+          const newPos = payload.new as GpsPosition
+          setPosition(newPos)
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
+
+  const feature = routeGeoJson.features[0]
+  const coordinates = feature?.geometry.coordinates ?? []
+  const totalKm = feature?.properties.totalKm ?? 1800
+
+  const kmProgress = useMemo(() => {
+    if (!position || coordinates.length === 0) return 0
+    const nearestIdx = findNearestPointIndex(coordinates, position.lat, position.lng)
+    return estimateKmProgress(coordinates, nearestIdx, totalKm)
+  }, [position, coordinates, totalKm])
+
+  // Calculate day counter from a start date
+  const dayCount = useMemo(() => {
+    const startDate = new Date('2026-07-01')
+    const now = new Date()
+    const diff = Math.floor(
+      (now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+    )
+    return Math.max(0, diff)
+  }, [])
+
+  // Center map on current position or midpoint of route
+  const center: LatLngExpression = position
+    ? [position.lat, position.lng]
+    : [52.5, -0.5]
+
+  return (
+    <div className="relative h-full w-full">
+      <MapContainer
+        center={center}
+        zoom={6}
+        scrollWheelZoom={true}
+        className="h-full w-full"
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <RouteLayer routeGeoJson={routeGeoJson} position={position} />
+        {position && <CurrentPositionMarker position={position} />}
+      </MapContainer>
+
+      <div className="absolute bottom-4 left-4 z-[1000] rounded-lg bg-white/90 px-4 py-3 shadow-lg backdrop-blur-sm">
+        <p className="text-sm font-semibold text-gray-800">
+          {kmProgress} / {totalKm} km
+        </p>
+        <p className="text-xs text-gray-600">
+          {dayCount > 0 ? `Day ${dayCount}` : 'Not started yet'}
+        </p>
+      </div>
+    </div>
+  )
+}

@@ -1,0 +1,74 @@
+{
+  "nav": {
+    "home": "Home",
+    "map": "Map",
+    "blog": "Blog",
+    "about": "About",
+    "fundraising": "Donate",
+    "switchLang": "FR"
+  },
+  "home": {
+    "title": "Road to Edi",
+    "subtitle": "Paris → Edinburgh by bike",
+    "tagline": "A 1,800 km journey to support \"Le souci des nôtres\"",
+    "ctaMap": "Follow the adventure",
+    "ctaDonate": "Support the cause",
+    "statsKm": "km covered",
+    "statsDay": "Day",
+    "statsOf": "of",
+    "statsCountry": "Current country",
+    "latestPosts": "Latest updates",
+    "viewAll": "View full blog"
+  },
+  "map": {
+    "title": "Map & Progress",
+    "kmProgress": "km covered",
+    "dayCounter": "Day",
+    "completed": "Completed",
+    "remaining": "Remaining",
+    "noPosition": "Waiting for GPS position…",
+    "liveUpdate": "Live updates"
+  },
+  "blog": {
+    "title": "Travel Blog",
+    "day": "Day",
+    "readMore": "Read more",
+    "backToBlog": "← Back to blog",
+    "noPosts": "No posts yet. Check back soon!"
+  },
+  "about": {
+    "title": "About",
+    "bio": "Biography",
+    "route": "The Route",
+    "links": "Links"
+  },
+  "fundraising": {
+    "title": "Support the cause",
+    "association": "The association",
+    "progress": "Progress",
+    "raised": "raised",
+    "goal": "goal",
+    "donate": "Donate",
+    "comingSoon": "Donation link coming soon"
+  },
+  "footer": {
+    "madeWith": "Made with ❤️ on the road",
+    "instagram": "Instagram",
+    "donate": "Donate"
+  },
+  "pwa": {
+    "title": "Road to Edi Tracker",
+    "pinLabel": "PIN Code",
+    "pinPlaceholder": "Enter PIN code",
+    "pinSubmit": "Access",
+    "pinError": "Incorrect PIN",
+    "status": "GPS Status",
+    "lastSent": "Last position sent",
+    "never": "Never",
+    "ago": "",
+    "minutes": "min ago",
+    "sendNow": "Send now",
+    "connected": "Connected",
+    "disconnected": "Disconnected"
+  }
+}
