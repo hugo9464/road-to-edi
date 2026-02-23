@@ -44,6 +44,22 @@ h1, h2, h3 {
   border-top-color: transparent;
 }
 
+.hugo-tooltip.leaflet-tooltip {
+  background: rgba(253, 248, 240, 0.92);
+  backdrop-filter: blur(6px);
+  border: none;
+  border-radius: 12px;
+  padding: 6px 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  font-size: 16px;
+  font-weight: 700;
+  color: #78350f;
+  white-space: nowrap;
+}
+.hugo-tooltip.leaflet-tooltip::before {
+  border-top-color: rgba(253, 248, 240, 0.92);
+}
+
 .pulse-marker {
   animation: pulse 2s infinite;
 }

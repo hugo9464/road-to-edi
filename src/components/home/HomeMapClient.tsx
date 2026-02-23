@@ -152,7 +152,11 @@ export default function HomeMapClient({
             center={[position.lat, position.lng]}
             radius={9}
             pathOptions={{ color: '#fff', fillColor: '#bf7856', fillOpacity: 0.9, weight: 2 }}
-          />
+          >
+            <Tooltip permanent direction="top" offset={[0, -10]} className="hugo-tooltip">
+              🚴 Hugo
+            </Tooltip>
+          </CircleMarker>
         )}
 
         <EndpointCountdown coordinates={coordinates} />
