@@ -1,13 +1,38 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
-import { MapContainer, TileLayer, Polyline, CircleMarker, Popup, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Polyline, CircleMarker, Marker, Tooltip } from 'react-leaflet'
 import type { LatLngExpression } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { createClient } from '@/lib/supabase/client'
-import type { GpsPosition, Post } from '@/lib/supabase/types'
+import type { GpsPosition } from '@/lib/supabase/types'
 import L from 'leaflet'
-import { Link } from '@/i18n/navigation'
+
+/* ── Countdown to Scotland v France — 7 Mar 2026, 15:10 CET (14:10 UTC) ── */
+const MATCH_UTC = new Date('2026-03-07T14:10:00Z').getTime()
+
+function useCountdown() {
+  const [remaining, setRemaining] = useState(() => MATCH_UTC - Date.now())
+  useEffect(() => {
+    const id = setInterval(() => setRemaining(MATCH_UTC - Date.now()), 1000)
+    return () => clearInterval(id)
+  }, [])
+  if (remaining <= 0) return null
+  const d = Math.floor(remaining / 86_400_000)
+  const h = Math.floor((remaining % 86_400_000) / 3_600_000)
+  const m = Math.floor((remaining % 3_600_000) / 60_000)
+  const s = Math.floor((remaining % 60_000) / 1000)
+  return { d, h, m, s }
+}
+
+const pad = (n: number) => String(n).padStart(2, '0')
+
+const flagIcon = L.divIcon({
+  className: '',
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
+  html: '<div style="width:20px;height:20px;border-radius:50%;background:#1e3a5f;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>',
+})
 
 // Fix Leaflet default icon in Next.js
 delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl
@@ -29,10 +54,6 @@ interface FeatureCollection {
 interface HomeMapClientProps {
   initialPosition: GpsPosition | null
   routeGeoJson: FeatureCollection
-  posts: Post[]
-  locale: string
-  selectedPostId: string | null
-  onPostSelect: (id: string) => void
 }
 
 function findNearestPointIndex(coordinates: [number, number][], lat: number, lng: number): number {
@@ -49,26 +70,33 @@ function findNearestPointIndex(coordinates: [number, number][], lat: number, lng
   return minIndex
 }
 
-// Pans map to selected post marker
-function MapController({ selectedPostId, posts }: { selectedPostId: string | null; posts: Post[] }) {
-  const map = useMap()
-  useEffect(() => {
-    if (!selectedPostId) return
-    const post = posts.find((p) => p.id === selectedPostId)
-    if (post?.lat != null && post?.lng != null) {
-      map.panTo([post.lat, post.lng], { animate: true, duration: 0.8 })
-    }
-  }, [selectedPostId, posts, map])
-  return null
+function EndpointCountdown({ coordinates }: { coordinates: [number, number][] }) {
+  const cd = useCountdown()
+  if (!cd || coordinates.length === 0) return null
+  const last = coordinates[coordinates.length - 1]
+  const endPoint: LatLngExpression = [last[1], last[0]]
+  return (
+    <Marker position={endPoint} icon={flagIcon}>
+      <Tooltip permanent direction="right" offset={[14, 0]} className="countdown-tooltip">
+        <div style={{ textAlign: 'center', lineHeight: 1.3 }}>
+          <div style={{ fontSize: 28, marginBottom: 2, letterSpacing: 4 }}>
+            🏴󠁧󠁢󠁳󠁣󠁴󠁿 – 🇫🇷
+          </div>
+          <div style={{ fontSize: 10, fontWeight: 600, color: '#78350f', marginBottom: 3 }}>
+            Coup d&apos;envoi dans
+          </div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: '#78350f', fontVariantNumeric: 'tabular-nums' }}>
+            {pad(cd.d)}j {pad(cd.h)}h {pad(cd.m)}m {pad(cd.s)}s
+          </div>
+        </div>
+      </Tooltip>
+    </Marker>
+  )
 }
 
 export default function HomeMapClient({
   initialPosition,
   routeGeoJson,
-  posts,
-  locale,
-  selectedPostId,
-  onPostSelect,
 }: HomeMapClientProps) {
   const [position, setPosition] = useState<GpsPosition | null>(initialPosition)
 
@@ -86,7 +114,6 @@ export default function HomeMapClient({
 
   const feature = routeGeoJson.features[0]
   const coordinates = feature?.geometry.coordinates ?? []
-  const totalKm = feature?.properties.totalKm ?? 1800
 
   const { completed, remaining } = useMemo(() => {
     if (!position || coordinates.length === 0) {
@@ -103,86 +130,34 @@ export default function HomeMapClient({
   }, [position, coordinates])
 
   const center: LatLngExpression = position ? [position.lat, position.lng] : [52.5, -0.5]
-  const postsWithGps = posts.filter((p) => p.lat != null && p.lng != null)
 
   return (
     <div className="relative h-full w-full">
       <MapContainer center={center} zoom={6} scrollWheelZoom={true} className="h-full w-full">
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          attribution='Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
+          maxZoom={18}
         />
 
-        {/* Route: completed (amber-brown) + remaining (stone dashed) */}
         {completed.length > 1 && (
-          <Polyline positions={completed} pathOptions={{ color: '#92400e', weight: 4 }} />
+          <Polyline positions={completed} pathOptions={{ color: '#6b9460', weight: 5, opacity: 0.75 }} />
         )}
         {remaining.length > 1 && (
-          <Polyline positions={remaining} pathOptions={{ color: '#a8a29e', weight: 3, dashArray: '8 8' }} />
+          <Polyline positions={remaining} pathOptions={{ color: '#b07a50', weight: 4, opacity: 0.7, dashArray: '12 6' }} />
         )}
 
-        {/* Current GPS position */}
         {position && (
           <CircleMarker
             center={[position.lat, position.lng]}
             radius={9}
-            pathOptions={{ color: '#fff', fillColor: '#c2410c', fillOpacity: 0.95, weight: 2 }}
+            pathOptions={{ color: '#fff', fillColor: '#bf7856', fillOpacity: 0.9, weight: 2 }}
           />
         )}
 
-        {/* Post markers */}
-        {postsWithGps.map((post) => {
-          const isSelected = post.id === selectedPostId
-          const title = (locale === 'en' && post.title_en) ? post.title_en : post.title_fr
-          return (
-            <CircleMarker
-              key={post.id}
-              center={[post.lat!, post.lng!]}
-              radius={isSelected ? 11 : 7}
-              pathOptions={{
-                color: '#fff',
-                fillColor: isSelected ? '#b45309' : '#78350f',
-                fillOpacity: 0.95,
-                weight: isSelected ? 2.5 : 1.5,
-              }}
-              eventHandlers={{ click: () => onPostSelect(post.id) }}
-            >
-              <Popup>
-                <div className="min-w-[180px] py-1">
-                  {post.day != null && (
-                    <p className="text-xs font-semibold text-orange-500 mb-1">
-                      Jour {post.day}{post.location ? ` · ${post.location}` : ''}
-                    </p>
-                  )}
-                  <p className="text-sm font-bold text-gray-900 mb-2 leading-snug">{title}</p>
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    className="text-xs text-blue-600 hover:underline font-medium"
-                  >
-                    Lire la suite →
-                  </Link>
-                </div>
-              </Popup>
-            </CircleMarker>
-          )
-        })}
-
-        <MapController selectedPostId={selectedPostId} posts={posts} />
+        <EndpointCountdown coordinates={coordinates} />
       </MapContainer>
 
-      {/* Legend */}
-      <div className="absolute bottom-4 left-4 z-[1000] flex flex-col gap-1.5">
-        <div className="flex items-center gap-1.5 rounded-lg bg-white/90 px-3 py-1.5 shadow backdrop-blur-sm text-xs text-stone-600">
-          <span className="inline-block w-3 h-0.5 bg-amber-800 rounded" />
-          Parcouru
-        </div>
-        {postsWithGps.length > 0 && (
-          <div className="flex items-center gap-1.5 rounded-lg bg-white/90 px-3 py-1.5 shadow backdrop-blur-sm text-xs text-stone-600">
-            <span className="inline-block w-2.5 h-2.5 rounded-full bg-amber-800" />
-            Posts
-          </div>
-        )}
-      </div>
     </div>
   )
 }

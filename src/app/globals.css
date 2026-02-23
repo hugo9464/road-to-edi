@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f3eb;
+  --foreground: #2c1a0e;
 }
 
 @theme inline {
@@ -10,11 +10,12 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-lora: var(--font-lora);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #1a1008;
     --foreground: #ededed;
   }
 }
@@ -23,6 +24,24 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-lora), Georgia, serif;
+}
+
+.countdown-tooltip.leaflet-tooltip {
+  background: rgba(253, 248, 240, 0.92);
+  backdrop-filter: blur(6px);
+  border: none;
+  border-radius: 10px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+}
+.countdown-tooltip.leaflet-tooltip::before {
+  border-right-color: rgba(253, 248, 240, 0.92);
+  border-top-color: transparent;
 }
 
 .pulse-marker {

@@ -1,18 +1,16 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from '@/i18n/navigation'
-import type { GpsPosition, Post, SiteSettings } from '@/lib/supabase/types'
+
+import type { GpsPosition, SiteSettings } from '@/lib/supabase/types'
 
 const HomeMapClient = dynamic(() => import('./HomeMapClient'), {
   ssr: false,
   loading: () => (
     <div className="flex h-full items-center justify-center bg-stone-100">
-      <div className="text-center">
-        <div className="text-4xl mb-3">🗺️</div>
-        <p className="text-stone-500 text-sm">Chargement de la carte…</p>
-      </div>
+      <p className="text-stone-500 text-sm">Chargement de la carte…</p>
     </div>
   ),
 })
@@ -29,115 +27,72 @@ interface FeatureCollection {
 interface HomeSPAWrapperProps {
   initialPosition: GpsPosition | null
   routeGeoJson: FeatureCollection
-  posts: Post[]
   settings: SiteSettings | null
   locale: string
   kmCovered: number
   day: number
 }
 
-function postExcerpt(md: string, max = 90): string {
-  const text = md
-    .replace(/#{1,6}\s/g, '')
-    .replace(/\*\*(.+?)\*\*/g, '$1')
-    .replace(/\*(.+?)\*/g, '$1')
-    .replace(/!\[.*?\]\(.*?\)/g, '')
-    .replace(/\[(.+?)\]\(.*?\)/g, '$1')
-    .replace(/\n+/g, ' ')
-    .trim()
-  return text.length > max ? text.slice(0, max) + '…' : text
-}
-
 export default function HomeSPAWrapper({
   initialPosition,
   routeGeoJson,
-  posts,
   settings,
-  locale,
   kmCovered,
   day,
 }: HomeSPAWrapperProps) {
-  const [selectedPostId, setSelectedPostId] = useState<string | null>(null)
-  const postRefs = useRef<Map<string, HTMLElement>>(new Map())
-
-  const totalKm = settings?.total_distance_km ?? 1800
+  const [donationOpen, setDonationOpen] = useState(false)
+  const totalKm = settings?.total_distance_km ?? 1046
   const instagramHandle = settings?.instagram_handle ?? ''
   const instagramUrl = instagramHandle ? `https://instagram.com/${instagramHandle}` : 'https://instagram.com'
   const donationUrl = settings?.donation_url ?? ''
   const pct = totalKm > 0 ? Math.min(100, Math.round((kmCovered / totalKm) * 100)) : 0
 
-  // Scroll sidebar to selected post when map marker is clicked
-  useEffect(() => {
-    if (!selectedPostId) return
-    const el = postRefs.current.get(selectedPostId)
-    el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-  }, [selectedPostId])
-
-  function handlePostSelect(id: string) {
-    setSelectedPostId((prev) => (prev === id ? null : id))
-  }
-
   return (
-    <div className="flex flex-col sm:flex-row h-full overflow-hidden">
+    <div className="relative h-full w-full">
 
-      {/* ── Map: 2/3 ── */}
-      <div className="h-[55%] sm:h-full sm:w-2/3 flex-none">
+      {/* ── Map (fullscreen) ── */}
+      <div className="absolute inset-0">
         <HomeMapClient
           initialPosition={initialPosition}
           routeGeoJson={routeGeoJson}
-          posts={posts}
-          locale={locale}
-          selectedPostId={selectedPostId}
-          onPostSelect={handlePostSelect}
         />
       </div>
 
-      {/* ── Sidebar: 1/3 ── */}
-      <aside className="flex-1 sm:w-1/3 sm:flex-none flex flex-col overflow-hidden bg-stone-50 border-t sm:border-t-0 sm:border-l border-stone-200">
+      {/* ── Top-center: donation button ── */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000]">
+        <button
+          onClick={() => setDonationOpen(true)}
+          className="px-4 py-2 rounded-xl bg-amber-800/90 backdrop-blur-sm text-amber-50 text-xs font-semibold hover:bg-amber-900 transition-colors shadow-md whitespace-nowrap"
+        >
+          Soutenir l&apos;association
+        </button>
+      </div>
 
-        {/* Brand */}
-        <div className="px-4 pt-4 pb-3 shrink-0">
-          <p className="text-lg font-bold text-stone-800 tracking-tight">🚴 Road to Edi</p>
-          <p className="text-xs text-stone-500 mt-0.5">Paris → Edinburgh · ~1 800 km</p>
-        </div>
+      {/* ── Bottom-right: Instagram button ── */}
+      <div className="absolute bottom-28 right-4 z-[1000] sm:bottom-6 sm:right-6">
+        <a
+          href={instagramUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-xs font-semibold shadow-md transition-opacity hover:opacity-90"
+          style={{ background: 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)' }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+          @hugo_a_velo
+        </a>
+      </div>
 
-        {/* Quick access buttons */}
-        <div className="flex gap-3 px-4 pb-3 shrink-0">
-          <a
-            href={instagramUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-stone-700 text-stone-100 text-sm font-semibold hover:bg-stone-800 transition-colors"
-          >
-            📸 Instagram
-          </a>
-          {donationUrl ? (
-            <a
-              href={donationUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-amber-800 text-amber-50 text-sm font-semibold hover:bg-amber-900 transition-colors"
-            >
-              💙 Donner
-            </a>
-          ) : (
-            <Link
-              href="/fundraising"
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-amber-800 text-amber-50 text-sm font-semibold hover:bg-amber-900 transition-colors"
-            >
-              💙 Donner
-            </Link>
-          )}
-        </div>
-
-        {/* Progress bar */}
-        <div className="px-4 py-3 shrink-0 border-t border-b border-stone-200 bg-white">
+      {/* ── Bottom: progress bar ── */}
+      <div className="absolute bottom-6 left-4 right-4 z-[1000] sm:left-6 sm:right-auto sm:w-72">
+        <div className="rounded-xl bg-[#fdf8f0]/90 backdrop-blur-sm px-4 py-3 shadow-md">
           <div className="flex justify-between text-xs text-stone-400 mb-1.5">
-            <span>🇫🇷 Paris</span>
+            <span>Paris</span>
             <span className="font-semibold text-stone-700">
               {kmCovered.toLocaleString('fr-FR')} / {totalKm.toLocaleString('fr-FR')} km
             </span>
-            <span>🏴󠁧󠁢󠁳󠁣󠁴󠁿 Edinburgh</span>
+            <span>Edinburgh</span>
           </div>
           <div className="h-2 bg-stone-200 rounded-full overflow-hidden">
             <div
@@ -149,89 +104,56 @@ export default function HomeSPAWrapper({
             <p className="text-xs text-stone-400 mt-1.5">Jour {day}</p>
           )}
         </div>
+      </div>
 
-        {/* Post list */}
-        <div className="flex-1 overflow-y-auto">
-          {posts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-stone-400 p-6 text-center">
-              <span className="text-4xl mb-3">📝</span>
-              <p className="text-sm">Le voyage n&apos;a pas encore commencé.<br />Revenez bientôt !</p>
-            </div>
-          ) : (
-            <ul className="divide-y divide-stone-100">
-              {posts.map((post) => {
-                const title = (locale === 'en' && post.title_en) ? post.title_en : post.title_fr
-                const isSelected = post.id === selectedPostId
-                const hasGps = post.lat != null && post.lng != null
-
-                return (
-                  <li key={post.id}>
-                    <button
-                      ref={(el) => {
-                        if (el) postRefs.current.set(post.id, el)
-                        else postRefs.current.delete(post.id)
-                      }}
-                      onClick={() => handlePostSelect(post.id)}
-                      className={`w-full text-left px-4 py-3 transition-colors border-l-2 ${
-                        isSelected
-                          ? 'bg-amber-50 border-amber-700'
-                          : 'bg-transparent border-transparent hover:bg-stone-100'
-                      }`}
-                    >
-                      <div className="flex gap-3 items-start">
-                        {/* Text */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5 mb-0.5">
-                            {post.day != null && (
-                              <span className="text-xs font-bold text-amber-800 shrink-0">
-                                J{post.day}
-                              </span>
-                            )}
-                            {post.location && (
-                              <span className="text-xs text-stone-400 truncate">· {post.location}</span>
-                            )}
-                            {hasGps && (
-                              <span className="ml-auto text-xs text-stone-400 shrink-0" title="Position GPS disponible">
-                                📍
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-sm font-semibold text-stone-900 leading-snug line-clamp-2 mb-1">
-                            {title}
-                          </p>
-                          {post.body_markdown && (
-                            <p className="text-xs text-stone-500 leading-relaxed line-clamp-2">
-                              {postExcerpt(post.body_markdown)}
-                            </p>
-                          )}
-                        </div>
-
-                        {/* Thumbnail */}
-                        {post.cover_image_url && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={post.cover_image_url}
-                            alt=""
-                            className="w-14 h-14 rounded-lg object-cover shrink-0 mt-0.5"
-                          />
-                        )}
-                      </div>
-
-                      <Link
-                        href={`/blog/${post.slug}`}
-                        className="mt-1.5 inline-block text-xs text-amber-800 hover:underline font-medium"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        Lire →
-                      </Link>
-                    </button>
-                  </li>
-                )
-              })}
-            </ul>
-          )}
+      {/* ── Donation modal ── */}
+      {donationOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-[2000] flex items-center justify-center p-4"
+          onClick={() => setDonationOpen(false)}
+        >
+          <div
+            className="bg-[#fdf8f0] rounded-2xl shadow-xl max-w-md w-full p-6 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setDonationOpen(false)}
+              className="absolute top-4 right-4 text-stone-400 hover:text-stone-600 transition-colors"
+              aria-label="Fermer"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+            <h2 className="font-[family-name:var(--font-lora)] text-xl font-bold text-amber-900 mb-4">
+              Le Souci Des Nôtres
+            </h2>
+            <p className="text-sm text-[#7a6550] leading-relaxed mb-6">
+              L&apos;association Le Souci Des Nôtres a pour but d&apos;aider les plus démunis, sans critère de distinctions, par le biais d&apos;actions solidaires, humanitaires ou sociales, en France ou à l&apos;étranger : maraudes, distributions alimentaires et collectes alimentaires auprès de petites ou grandes surfaces&nbsp;; distributions de colis alimentaires, aide aux orphelinats à l&apos;étranger (envoi de médicaments, équipements sportifs, fournitures scolaires, etc.)&nbsp;; financement de construction de puits à l&apos;étranger&nbsp;; organisation d&apos;événements sportifs et rencontres pour financer des actions précises. Soutenez nos actions, partagez nos valeurs et impliquez-vous dans la vie de l&apos;Association grâce à une cotisation annuelle.
+            </p>
+            {donationUrl ? (
+              <a
+                href={donationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full text-center py-3 rounded-xl bg-amber-800 text-amber-50 font-semibold hover:bg-amber-900 transition-colors"
+              >
+                Faire un don
+              </a>
+            ) : (
+              <Link
+                href="/fundraising"
+                onClick={() => setDonationOpen(false)}
+                className="block w-full text-center py-3 rounded-xl bg-amber-800 text-amber-50 font-semibold hover:bg-amber-900 transition-colors"
+              >
+                Faire un don
+              </Link>
+            )}
+          </div>
         </div>
-      </aside>
+      )}
+
     </div>
   )
 }
