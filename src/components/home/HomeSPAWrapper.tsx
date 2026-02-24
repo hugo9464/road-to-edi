@@ -100,7 +100,7 @@ export default function HomeSPAWrapper({
               alt="US Alfortville Rugby"
               className="w-8 h-8 object-contain shrink-0"
             />
-            Alfortville Rugby
+            <span className="hidden sm:inline">Alfortville Rugby</span>
           </a>
         </div>
       </div>
