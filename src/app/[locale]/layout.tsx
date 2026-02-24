@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Geist } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -7,9 +6,6 @@ import { Analytics } from '@vercel/analytics/next';
 import { routing } from '@/i18n/routing';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import '../globals.css';
-
-const geist = Geist({ subsets: ['latin'], variable: '--font-geist' });
 
 export const metadata: Metadata = {
   title: {
@@ -49,15 +45,13 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale}>
-      <body className={`${geist.variable} font-sans antialiased flex flex-col min-h-screen`}>
-        <NextIntlClientProvider messages={messages}>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer locale={locale} />
-        </NextIntlClientProvider>
-        <Analytics />
-      </body>
-    </html>
+    <NextIntlClientProvider messages={messages}>
+      <div className="font-sans flex flex-col min-h-screen">
+        <Navbar />
+        <main className="flex-1">{children}</main>
+        <Footer locale={locale} />
+      </div>
+      <Analytics />
+    </NextIntlClientProvider>
   );
 }

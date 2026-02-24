@@ -13,7 +13,7 @@ export default async function Footer({ locale }: { locale: string }) {
     : 'https://instagram.com'
 
   return (
-    <footer className="bg-gray-900 text-gray-300 py-8 mt-auto">
+    <footer className="bg-[#1a1008] text-gray-300 py-8 mt-auto">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="text-sm">{t('madeWith')}</div>
@@ -24,7 +24,7 @@ export default async function Footer({ locale }: { locale: string }) {
               rel="noopener noreferrer"
               className="hover:text-white transition-colors"
             >
-              📸 {instagramHandle ? `@${instagramHandle}` : t('instagram')}
+              {instagramHandle ? `@${instagramHandle}` : t('instagram')}
             </a>
             {donationUrl ? (
               <a
@@ -33,11 +33,11 @@ export default async function Footer({ locale }: { locale: string }) {
                 rel="noopener noreferrer"
                 className="hover:text-white transition-colors"
               >
-                💙 {t('donate')}
+                {t('donate')}
               </a>
             ) : (
               <Link href="/fundraising" className="hover:text-white transition-colors">
-                💙 {t('donate')}
+                {t('donate')}
               </Link>
             )}
           </div>

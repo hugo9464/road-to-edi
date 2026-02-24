@@ -17,18 +17,17 @@ export default function Navbar() {
   const navLinks = [
     { href: '/', label: t('home') },
     { href: '/map', label: t('map') },
-    { href: '/blog', label: t('blog') },
     { href: '/fundraising', label: t('fundraising') },
     { href: '/about', label: t('about') },
   ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+    <nav className="sticky top-0 z-50 bg-[#fdf8f0]/90 backdrop-blur-sm border-b border-[#d9cdb8] shadow-sm">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
-          <Link href="/" className="font-bold text-lg text-blue-600 hover:text-blue-700">
-            🚴 Road to Edi
+          <Link href="/" className="font-bold text-lg text-amber-800 hover:text-amber-900">
+            Road to Edi
           </Link>
 
           {/* Desktop nav */}
@@ -39,8 +38,8 @@ export default function Navbar() {
                 href={link.href}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   pathname === link.href
-                    ? 'bg-blue-50 text-blue-700'
-                    : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                    ? 'bg-amber-50 text-amber-800'
+                    : 'text-[#7a6550] hover:text-amber-800 hover:bg-[#f0e8d8]'
                 }`}
               >
                 {link.label}
@@ -52,7 +51,7 @@ export default function Navbar() {
           <Link
             href={pathname}
             locale={otherLocale as 'fr' | 'en'}
-            className="px-3 py-1.5 text-xs font-semibold rounded-full border border-gray-200 text-gray-600 hover:border-blue-300 hover:text-blue-600 transition-colors"
+            className="px-3 py-1.5 text-xs font-semibold rounded-full border border-[#d9cdb8] text-[#7a6550] hover:border-amber-400 hover:text-amber-800 transition-colors"
           >
             {t('switchLang')}
           </Link>
@@ -66,8 +65,8 @@ export default function Navbar() {
               href={link.href}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                 pathname === link.href
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-600'
+                  ? 'bg-amber-800 text-amber-50'
+                  : 'bg-[#f0e8d8] text-[#7a6550]'
               }`}
             >
               {link.label}

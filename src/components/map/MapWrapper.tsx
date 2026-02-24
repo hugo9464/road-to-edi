@@ -7,10 +7,9 @@ import type { GpsPosition } from '@/lib/supabase/types'
 const JourneyMap = dynamic(() => import('./JourneyMap'), {
   ssr: false,
   loading: () => (
-    <div className="flex h-full items-center justify-center bg-gray-100">
+    <div className="flex h-full items-center justify-center bg-[#f7f3eb]">
       <div className="text-center">
-        <div className="text-3xl mb-2">🗺️</div>
-        <p className="text-gray-500">Loading map...</p>
+        <p className="text-[#7a6550]">Loading map...</p>
       </div>
     </div>
   ),

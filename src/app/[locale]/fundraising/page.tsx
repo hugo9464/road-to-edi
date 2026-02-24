@@ -66,7 +66,7 @@ export default async function FundraisingPage() {
             rel="noopener noreferrer"
             className="inline-block rounded-2xl bg-blue-600 px-10 py-4 text-lg font-semibold text-white shadow-lg transition hover:bg-blue-700"
           >
-            💙 Faire un don
+            Faire un don
           </a>
         ) : (
           <div className="group relative inline-block">
@@ -74,7 +74,7 @@ export default async function FundraisingPage() {
               disabled
               className="rounded-2xl bg-gray-300 px-10 py-4 text-lg font-semibold text-white cursor-not-allowed"
             >
-              💙 Faire un don
+              Faire un don
             </button>
             <span className="absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-800 px-3 py-1.5 text-sm text-white opacity-0 transition group-hover:opacity-100">
               Lien bientôt disponible

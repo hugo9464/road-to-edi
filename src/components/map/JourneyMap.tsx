@@ -49,14 +49,27 @@ function findNearestPointIndex(
   return minIndex
 }
 
+function haversineKm([lng1, lat1]: [number, number], [lng2, lat2]: [number, number]): number {
+  const R = 6371
+  const dLat = (lat2 - lat1) * Math.PI / 180
+  const dLng = (lng2 - lng1) * Math.PI / 180
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+}
+
 function estimateKmProgress(
   coordinates: [number, number][],
   nearestIndex: number,
-  totalKm: number
+  boatStartKm: number,
+  boatKm: number,
 ): number {
   if (coordinates.length < 2) return 0
-  const fraction = nearestIndex / (coordinates.length - 1)
-  return Math.round(fraction * totalKm)
+  let km = 0
+  for (let i = 1; i <= nearestIndex; i++) km += haversineKm(coordinates[i - 1], coordinates[i])
+  const boatEndKm = boatStartKm + boatKm
+  if (km > boatEndKm) km -= boatKm
+  else if (km > boatStartKm) km = boatStartKm
+  return Math.round(km)
 }
 
 function RouteLayer({
@@ -88,7 +101,9 @@ function RouteLayer({
       position.lat,
       position.lng
     )
-    const km = estimateKmProgress(coordinates, nearestIdx, totalKm)
+    const boatStartKm = (feature.properties.boatStartKm as number | undefined) ?? 187
+    const boatKm = (feature.properties.boatKm as number | undefined) ?? 122
+    const km = estimateKmProgress(coordinates, nearestIdx, boatStartKm, boatKm)
 
     const completedCoords = coordinates
       .slice(0, nearestIdx + 1)
@@ -105,13 +120,13 @@ function RouteLayer({
       {completed.length > 1 && (
         <Polyline
           positions={completed}
-          pathOptions={{ color: '#3b82f6', weight: 4 }}
+          pathOptions={{ color: '#6b9460', weight: 5, opacity: 0.75 }}
         />
       )}
       {remaining.length > 1 && (
         <Polyline
           positions={remaining}
-          pathOptions={{ color: '#9ca3af', weight: 3, dashArray: '8 8' }}
+          pathOptions={{ color: '#e74c3c', weight: 6, opacity: 1 }}
         />
       )}
     </>
@@ -124,9 +139,9 @@ function CurrentPositionMarker({ position }: { position: GpsPosition }) {
       center={[position.lat, position.lng]}
       radius={8}
       pathOptions={{
-        color: '#3b82f6',
-        fillColor: '#3b82f6',
-        fillOpacity: 0.8,
+        color: '#fff',
+        fillColor: '#bf7856',
+        fillOpacity: 0.9,
         weight: 2,
       }}
       className="pulse-marker"
@@ -162,13 +177,15 @@ export default function JourneyMap({
 
   const feature = routeGeoJson.features[0]
   const coordinates = feature?.geometry.coordinates ?? []
-  const totalKm = feature?.properties.totalKm ?? 1800
+  const totalKm = feature?.properties.totalKm ?? 1046
+  const boatStartKm = (feature?.properties.boatStartKm as number | undefined) ?? 187
+  const boatKm = (feature?.properties.boatKm as number | undefined) ?? 122
 
   const kmProgress = useMemo(() => {
     if (!position || coordinates.length === 0) return 0
     const nearestIdx = findNearestPointIndex(coordinates, position.lat, position.lng)
-    return estimateKmProgress(coordinates, nearestIdx, totalKm)
-  }, [position, coordinates, totalKm])
+    return estimateKmProgress(coordinates, nearestIdx, boatStartKm, boatKm)
+  }, [position, coordinates, boatStartKm, boatKm])
 
   // Calculate day counter from a start date
   const dayCount = useMemo(() => {
@@ -194,19 +211,20 @@ export default function JourneyMap({
         className="h-full w-full"
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
+          maxZoom={18}
         />
         <RouteLayer routeGeoJson={routeGeoJson} position={position} />
         {position && <CurrentPositionMarker position={position} />}
       </MapContainer>
 
-      <div className="absolute bottom-4 left-4 z-[1000] rounded-lg bg-white/90 px-4 py-3 shadow-lg backdrop-blur-sm">
-        <p className="text-sm font-semibold text-gray-800">
+      <div className="absolute bottom-4 left-4 z-[1000] rounded-lg bg-[#fdf8f0]/90 px-4 py-3 shadow-lg backdrop-blur-sm">
+        <p className="text-sm font-semibold text-stone-800">
           {kmProgress} / {totalKm} km
         </p>
-        <p className="text-xs text-gray-600">
-          {dayCount > 0 ? `Day ${dayCount}` : 'Not started yet'}
+        <p className="text-xs text-[#7a6550]">
+          {dayCount > 0 ? `Jour ${dayCount}` : 'Pas encore commencé'}
         </p>
       </div>
     </div>
