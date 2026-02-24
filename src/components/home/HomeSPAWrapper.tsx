@@ -106,7 +106,7 @@ export default function HomeSPAWrapper({
       </div>
 
       {/* ── Bottom: progress bar ── */}
-      <div className="absolute bottom-6 left-4 right-4 z-[1000] sm:left-6 sm:right-auto sm:w-72">
+      <div className="absolute bottom-6 left-4 right-4 z-[1000] sm:left-1/2 sm:-translate-x-1/2 sm:w-80 sm:right-auto">
         <div className="rounded-xl bg-[#fdf8f0]/90 backdrop-blur-sm px-4 py-3 shadow-md">
           <div className="flex justify-between text-xs text-stone-400 mb-1.5">
             <span>Paris</span>
