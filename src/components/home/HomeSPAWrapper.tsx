@@ -59,7 +59,7 @@ export default function HomeSPAWrapper({
       </div>
 
       {/* ── Top-center: Donation + Instagram & Club logo ── */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] flex flex-col items-center gap-2 sm:flex-row sm:items-end sm:gap-3">
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] flex flex-col items-center gap-2 sm:flex-row sm:items-end sm:gap-3 max-w-[calc(100vw-2rem)]">
         {/* Donation (top on mobile, center on desktop) */}
         <button
           onClick={() => setDonationOpen(true)}
@@ -73,7 +73,7 @@ export default function HomeSPAWrapper({
         </button>
 
         {/* Instagram + Alfortville row (below on mobile, flanking on desktop) */}
-        <div className="flex items-center gap-2 sm:contents">
+        <div className="flex flex-wrap justify-center items-center gap-2 sm:contents">
           {/* Instagram (left) */}
           <a
             href={instagramUrl}
