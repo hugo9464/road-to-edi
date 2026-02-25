@@ -25,7 +25,8 @@ export default function PosterMap({ routeGeoJson }: { routeGeoJson: FeatureColle
   const routePositions: LatLngExpression[] = coordinates.map(([lng, lat]) => [lat, lng])
 
   // Center map on the English Channel area to show full route
-  const center: LatLngExpression = [52.0, -0.5]
+  // Shift west so route is centered in the visible area (right of overlay panel)
+  const center: LatLngExpression = [52.0, -2.0]
 
   return (
     <MapContainer

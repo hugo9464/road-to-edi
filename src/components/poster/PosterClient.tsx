@@ -64,7 +64,7 @@ export default function PosterClient({ routeGeoJson }: { routeGeoJson: FeatureCo
           </div>
 
           {/* Title */}
-          <h1 className="font-[family-name:var(--font-lora)] text-6xl font-bold text-amber-900 leading-[1.05] tracking-tight">
+          <h1 className="font-[family-name:var(--font-lora)] text-5xl font-bold text-amber-900 leading-[1.1] tracking-tight">
             OBJECTIF
             <br />
             MURRAYFIELD
