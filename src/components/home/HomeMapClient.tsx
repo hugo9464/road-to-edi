@@ -79,6 +79,9 @@ function EndpointCountdown({ coordinates }: { coordinates: [number, number][] })
     <Marker position={endPoint} icon={flagIcon}>
       <Tooltip permanent direction="right" offset={[14, 0]} className="countdown-tooltip">
         <div style={{ textAlign: 'center', lineHeight: 1.3 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#78350f', letterSpacing: 1, marginBottom: 3 }}>
+            Murrayfield
+          </div>
           <div style={{ fontSize: 28, marginBottom: 2, letterSpacing: 4 }}>
             🏴󠁧󠁢󠁳󠁣󠁴󠁿 – 🇫🇷
           </div>
