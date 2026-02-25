@@ -49,13 +49,13 @@ export default function PosterClient({ routeGeoJson }: { routeGeoJson: FeatureCo
         {/* Left overlay panel */}
         <div className="absolute top-0 left-0 bottom-0 z-[1000] w-[380px] flex flex-col bg-[#fdf8f0]/85 backdrop-blur-md shadow-2xl px-8 py-10">
           {/* Alfortville Rugby logo */}
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-4 mb-8">
             <img
               src="/images/logo-alfortville.jpeg"
               alt="US Alfortville Rugby"
-              className="w-12 h-12 rounded-lg object-contain"
+              className="w-16 h-16 rounded-xl object-contain shadow-md"
             />
-            <span className="text-sm font-semibold text-[#1a2260]">US Alfortville Rugby</span>
+            <span className="text-base font-bold text-[#1a2260] leading-tight">US Alfortville<br />Rugby</span>
           </div>
 
           {/* Title */}
