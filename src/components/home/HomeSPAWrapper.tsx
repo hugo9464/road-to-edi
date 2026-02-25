@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
-import { Link } from '@/i18n/navigation'
+import Link from 'next/link'
 
 import type { GpsPosition, SiteSettings } from '@/lib/supabase/types'
 
@@ -28,7 +28,6 @@ interface HomeSPAWrapperProps {
   initialPosition: GpsPosition | null
   routeGeoJson: FeatureCollection
   settings: SiteSettings | null
-  locale: string
   kmCovered: number
   day: number
 }

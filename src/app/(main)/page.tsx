@@ -1,4 +1,3 @@
-import { getTranslations } from 'next-intl/server'
 import type { Metadata } from 'next'
 import fs from 'fs/promises'
 import path from 'path'
@@ -9,18 +8,10 @@ import HomeSPAWrapper from '@/components/home/HomeSPAWrapper'
 
 export const dynamic = 'force-dynamic'
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}): Promise<Metadata> {
-  const { locale } = await params
-  const t = await getTranslations({ locale, namespace: 'home' })
-  return {
-    title: t('title'),
-    description: t('tagline'),
-    openGraph: { title: 'Objectif Murrayfield — Paris → Edinburgh', description: t('tagline') },
-  }
+export const metadata: Metadata = {
+  title: 'Objectif Murrayfield',
+  description: 'Paris → Édimbourg à vélo — un voyage de 1 046 km au profit de « Le Souci des Nôtres »',
+  openGraph: { title: 'Objectif Murrayfield — Paris → Edinburgh', description: 'Paris → Édimbourg à vélo' },
 }
 
 function haversineKm([lng1, lat1]: [number, number], [lng2, lat2]: [number, number]): number {
@@ -56,9 +47,7 @@ function dayNumber(startDate?: string | null): number {
   return Math.max(0, Math.floor((Date.now() - new Date(startDate).getTime()) / 86_400_000))
 }
 
-export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params
-
+export default async function HomePage() {
   const [settingsR, gpsR, routeR] = await Promise.allSettled([
     getSiteSettings(),
     (async () => {
@@ -96,7 +85,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         initialPosition={gps}
         routeGeoJson={routeJson}
         settings={settings}
-        locale={locale}
         kmCovered={kmCovered}
         day={day}
       />

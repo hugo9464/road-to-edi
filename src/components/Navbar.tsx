@@ -1,25 +1,20 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { Link, usePathname } from '@/i18n/navigation';
-import { useParams } from 'next/navigation';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
+const navLinks = [
+  { href: '/', label: 'Accueil' },
+  { href: '/map', label: 'Carte' },
+  { href: '/fundraising', label: 'Soutenir' },
+  { href: '/about', label: 'À propos' },
+];
 
 export default function Navbar() {
-  const t = useTranslations('nav');
   const pathname = usePathname();
-  const params = useParams();
 
   // SPA home page: no navbar
   if (pathname === '/') return null;
-  const locale = params.locale as string;
-  const otherLocale = locale === 'fr' ? 'en' : 'fr';
-
-  const navLinks = [
-    { href: '/', label: t('home') },
-    { href: '/map', label: t('map') },
-    { href: '/fundraising', label: t('fundraising') },
-    { href: '/about', label: t('about') },
-  ];
 
   return (
     <nav className="sticky top-0 z-50 bg-[#fdf8f0]/90 backdrop-blur-sm border-b border-[#d9cdb8] shadow-sm">
@@ -46,15 +41,6 @@ export default function Navbar() {
               </Link>
             ))}
           </div>
-
-          {/* Language switcher */}
-          <Link
-            href={pathname}
-            locale={otherLocale as 'fr' | 'en'}
-            className="px-3 py-1.5 text-xs font-semibold rounded-full border border-[#d9cdb8] text-[#7a6550] hover:border-amber-400 hover:text-amber-800 transition-colors"
-          >
-            {t('switchLang')}
-          </Link>
         </div>
 
         {/* Mobile nav */}

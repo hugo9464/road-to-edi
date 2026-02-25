@@ -15,13 +15,8 @@ interface FeatureCollection {
 
 const cities: { name: string; lat: number; lng: number }[] = [
   { name: 'Paris', lat: 48.8566, lng: 2.3522 },
-  { name: 'Calais', lat: 50.9513, lng: 1.8587 },
-  { name: 'Dover', lat: 51.1279, lng: 1.3134 },
-  { name: 'London', lat: 51.5074, lng: -0.1278 },
-  { name: 'Cambridge', lat: 52.2053, lng: 0.1218 },
-  { name: 'York', lat: 53.9591, lng: -1.0815 },
-  { name: 'Newcastle', lat: 54.9783, lng: -1.6178 },
-  { name: 'Edinburgh', lat: 55.9533, lng: -3.1883 },
+  { name: 'Londres', lat: 51.5074, lng: -0.1278 },
+  { name: 'Édimbourg', lat: 55.9533, lng: -3.1883 },
 ]
 
 export default function PosterMap({ routeGeoJson }: { routeGeoJson: FeatureCollection }) {
@@ -63,17 +58,17 @@ export default function PosterMap({ routeGeoJson }: { routeGeoJson: FeatureColle
         <CircleMarker
           key={city.name}
           center={[city.lat, city.lng]}
-          radius={city.name === 'Paris' || city.name === 'Edinburgh' ? 8 : 5}
+          radius={city.name === 'Paris' || city.name === 'Édimbourg' ? 8 : 6}
           pathOptions={{
             color: '#fff',
-            fillColor: city.name === 'Paris' || city.name === 'Edinburgh' ? '#92400e' : '#b45309',
+            fillColor: '#92400e',
             fillOpacity: 0.9,
             weight: 2,
           }}
         >
           <Tooltip
             permanent
-            direction={city.name === 'Paris' ? 'left' : city.name === 'Edinburgh' ? 'right' : 'right'}
+            direction={city.name === 'Paris' ? 'left' : 'right'}
             offset={city.name === 'Paris' ? [-10, 0] : [10, 0]}
             className="poster-city-label"
           >
