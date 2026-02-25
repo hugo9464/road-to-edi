@@ -42,7 +42,7 @@ export default function AdminLoginPage() {
         className="w-full max-w-sm bg-gray-800 rounded-2xl p-8 shadow-xl"
       >
         <h1 className="text-2xl font-bold text-white mb-6 text-center">
-          Road to Edi Admin
+          Objectif Murrayfield Admin
         </h1>
 
         <label htmlFor="password" className="block text-sm text-gray-400 mb-2">

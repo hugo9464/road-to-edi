@@ -124,7 +124,7 @@ export default function PWAPage() {
 
   return (
     <div className="flex min-h-dvh flex-col bg-[#1a1a2e] p-6 text-white">
-      <h1 className="mb-6 text-center text-xl font-bold">Road to Edi - GPS Tracker</h1>
+      <h1 className="mb-6 text-center text-xl font-bold">Objectif Murrayfield - GPS Tracker</h1>
 
       {/* Status indicator */}
       <div className="mb-6 flex items-center justify-center gap-2">

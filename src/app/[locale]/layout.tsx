@@ -9,13 +9,13 @@ import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Road to Edi',
-    default: 'Road to Edi — Paris → Edinburgh',
+    template: '%s | Objectif Murrayfield',
+    default: 'Objectif Murrayfield — Paris → Edinburgh',
   },
   description:
     'Hugo cycling from Paris to Edinburgh for Scotland vs France at Murrayfield, raising funds for Le souci des nôtres.',
   openGraph: {
-    siteName: 'Road to Edi',
+    siteName: 'Objectif Murrayfield',
     type: 'website',
   },
   icons: {

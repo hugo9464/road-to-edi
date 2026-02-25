@@ -15,7 +15,7 @@ export default function AboutPage() {
     <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Hero */}
       <section className="mb-12 text-center">
-        <h1 className="mb-4 text-4xl font-bold tracking-tight">Road to Edinburgh</h1>
+        <h1 className="mb-4 text-4xl font-bold tracking-tight">Objectif Murrayfield</h1>
         <p className="text-lg text-gray-600 dark:text-gray-400">
           Paris &rarr; Edinburgh by bike &mdash; {totalKm} km for a cause
         </p>

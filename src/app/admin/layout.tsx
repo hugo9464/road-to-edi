@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Admin — Road to Edi',
+  title: 'Admin — Objectif Murrayfield',
 }
 
 export default function AdminLayout({
@@ -11,7 +11,7 @@ export default function AdminLayout({
     <div className="bg-gray-900 text-gray-100 min-h-screen flex">
       <aside className="w-64 bg-gray-950 border-r border-gray-800 p-6 flex flex-col max-md:hidden">
         <h1 className="text-lg font-bold mb-8 text-white">
-          Road to Edi Admin
+          Objectif Murrayfield Admin
         </h1>
         <nav className="flex flex-col gap-2 flex-1">
           <a
@@ -41,7 +41,7 @@ export default function AdminLayout({
         {/* Mobile header */}
         <header className="md:hidden flex items-center justify-between p-4 bg-gray-950 border-b border-gray-800">
           <h1 className="text-lg font-bold text-white">
-            Road to Edi Admin
+            Objectif Murrayfield Admin
           </h1>
           <nav className="flex items-center gap-3">
             <a href="/admin/settings" className="text-sm text-gray-300 hover:text-white">

@@ -1,7 +1,7 @@
 {
-  "name": "Road to Edi Tracker",
-  "short_name": "RTE Tracker",
-  "description": "GPS tracker for the Road to Edinburgh cycling journey",
+  "name": "Objectif Murrayfield Tracker",
+  "short_name": "OM Tracker",
+  "description": "GPS tracker for the Objectif Murrayfield cycling journey",
   "start_url": "/pwa",
   "display": "standalone",
   "background_color": "#1a1a2e",

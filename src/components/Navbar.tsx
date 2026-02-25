@@ -27,7 +27,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
           <Link href="/" className="font-bold text-lg text-amber-800 hover:text-amber-900">
-            Road to Edi
+            Objectif Murrayfield
           </Link>
 
           {/* Desktop nav */}

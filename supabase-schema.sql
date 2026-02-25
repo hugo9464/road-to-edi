@@ -1,5 +1,5 @@
 -- ============================================================
--- Road to Edi — Supabase schema
+-- Objectif Murrayfield — Supabase schema
 -- Run this in your Supabase SQL Editor
 -- ============================================================
 

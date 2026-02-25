@@ -7,9 +7,9 @@ const geist = Geist({ subsets: ['latin'], variable: '--font-geist' });
 const lora = Lora({ subsets: ['latin'], variable: '--font-lora' });
 
 export const metadata: Metadata = {
-  title: 'Road to Edi — Paris → Edinburgh',
+  title: 'Objectif Murrayfield — Paris → Edinburgh',
   description:
-    'Hugo cycling from Paris to Edinburgh for Scotland vs France at Murrayfield, raising funds for Le souci des nôtres.',
+    'Hugo à vélo de Paris à Edinburgh pour Écosse-France à Murrayfield, au profit de Le Souci des Nôtres.',
 };
 
 export default async function RootLayout({

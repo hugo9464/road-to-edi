@@ -1,11 +1,11 @@
-# Road to Edi — Setup Guide
+# Objectif Murrayfield — Setup Guide
 
 ## Services to configure before going live
 
 ### 1. Sanity CMS (blog & settings)
 
 1. Go to [sanity.io](https://sanity.io) → create a free account
-2. Create a new project → choose "Empty" → name it "Road to Edi"
+2. Create a new project → choose "Empty" → name it "Objectif Murrayfield"
 3. Note your **Project ID** (shown on dashboard)
 4. Go to **API** → create a **Read** token (for ISR) and a **Write** token (for future use)
 5. Deploy Studio: `cd sanity && npx sanity@latest deploy` → choose `road-to-edi` as subdomain

@@ -20,16 +20,6 @@ interface FeatureCollection {
   }>
 }
 
-const stages = [
-  { from: 'Paris', to: 'Calais', km: 290 },
-  { from: 'Calais', to: 'Dover', km: 50, note: 'Ferry' },
-  { from: 'Dover', to: 'London', km: 125 },
-  { from: 'London', to: 'Cambridge', km: 100 },
-  { from: 'Cambridge', to: 'York', km: 250 },
-  { from: 'York', to: 'Newcastle', km: 135 },
-  { from: 'Newcastle', to: 'Edinburgh', km: 200 },
-]
-
 export default function PosterClient({ routeGeoJson }: { routeGeoJson: FeatureCollection }) {
   return (
     <div className="relative h-screen w-screen overflow-hidden">
@@ -53,41 +43,18 @@ export default function PosterClient({ routeGeoJson }: { routeGeoJson: FeatureCo
           </div>
 
           <h1 className="font-[family-name:var(--font-lora)] text-4xl font-bold text-amber-900 leading-tight tracking-tight">
-            ROAD TO
+            OBJECTIF
             <br />
-            EDINBURGH
+            MURRAYFIELD
           </h1>
           <p className="mt-2 text-lg text-[#7a6550] font-medium">
             Paris &rarr; Edinburgh à vélo
           </p>
 
           {/* Distance badge */}
-          <div className="mt-6 flex items-center gap-3">
-            <span className="text-4xl">🚴</span>
-            <div>
-              <p className="text-3xl font-bold text-amber-900 font-[family-name:var(--font-lora)]">1 046 km</p>
-              <p className="text-sm text-[#7a6550]">7 étapes · 2 pays</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Middle: stages list */}
-        <div className="my-6 flex-1 flex flex-col justify-center">
-          <div className="space-y-2">
-            {stages.map((stage, i) => (
-              <div key={i} className="flex items-center gap-2.5">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-800 text-[10px] font-bold text-amber-50">
-                  {i + 1}
-                </span>
-                <span className="text-sm text-amber-900 font-medium flex-1">
-                  {stage.from} &rarr; {stage.to}
-                  {stage.note && (
-                    <span className="ml-1.5 text-xs text-[#7a6550] font-normal">({stage.note})</span>
-                  )}
-                </span>
-                <span className="text-xs text-[#7a6550] tabular-nums">{stage.km} km</span>
-              </div>
-            ))}
+          <div className="mt-6">
+            <p className="text-3xl font-bold text-amber-900 font-[family-name:var(--font-lora)]">1 046 km</p>
+            <p className="text-sm text-[#7a6550]">7 étapes · 2 pays</p>
           </div>
         </div>
 

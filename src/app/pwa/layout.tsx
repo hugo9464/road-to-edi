@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import '../globals.css'
 
 export const metadata: Metadata = {
-  title: 'Road to Edi - GPS Tracker',
-  description: 'GPS tracker for the Road to Edinburgh cycling journey',
+  title: 'Objectif Murrayfield - GPS Tracker',
+  description: 'GPS tracker for the Objectif Murrayfield cycling journey',
   manifest: '/manifest.json',
   other: {
     'theme-color': '#1a1a2e',

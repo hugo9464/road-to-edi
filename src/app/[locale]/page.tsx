@@ -19,7 +19,7 @@ export async function generateMetadata({
   return {
     title: t('title'),
     description: t('tagline'),
-    openGraph: { title: 'Road to Edi — Paris → Edinburgh', description: t('tagline') },
+    openGraph: { title: 'Objectif Murrayfield — Paris → Edinburgh', description: t('tagline') },
   }
 }
 

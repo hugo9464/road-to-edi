@@ -8,7 +8,7 @@
     "switchLang": "FR"
   },
   "home": {
-    "title": "Road to Edi",
+    "title": "Objectif Murrayfield",
     "subtitle": "Paris → Edinburgh by bike",
     "tagline": "A 1,800 km journey to support \"Le souci des nôtres\"",
     "ctaMap": "Follow the adventure",
@@ -57,7 +57,7 @@
     "donate": "Donate"
   },
   "pwa": {
-    "title": "Road to Edi Tracker",
+    "title": "Objectif Murrayfield Tracker",
     "pinLabel": "PIN Code",
     "pinPlaceholder": "Enter PIN code",
     "pinSubmit": "Access",
