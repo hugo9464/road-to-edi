@@ -49,7 +49,7 @@ export default function PosterMap({ routeGeoJson }: { routeGeoJson: FeatureColle
       {routePositions.length > 1 && (
         <Polyline
           positions={routePositions}
-          pathOptions={{ color: '#92400e', weight: 4, opacity: 0.8 }}
+          pathOptions={{ color: '#92400e', weight: 6, opacity: 0.8 }}
         />
       )}
 
@@ -58,7 +58,7 @@ export default function PosterMap({ routeGeoJson }: { routeGeoJson: FeatureColle
         <CircleMarker
           key={city.name}
           center={[city.lat, city.lng]}
-          radius={city.name === 'Paris' || city.name === 'Édimbourg' ? 8 : 6}
+          radius={city.name === 'Paris' || city.name === 'Édimbourg' ? 10 : 7}
           pathOptions={{
             color: '#fff',
             fillColor: '#92400e',
