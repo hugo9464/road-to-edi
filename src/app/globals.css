@@ -68,3 +68,22 @@ h1, h2, h3 {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.5; transform: scale(1.5); }
 }
+
+.poster-city-label.leaflet-tooltip {
+  background: rgba(253, 248, 240, 0.9);
+  border: none;
+  border-radius: 6px;
+  padding: 2px 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  font-size: 13px;
+  font-weight: 700;
+  color: #78350f;
+  white-space: nowrap;
+}
+.poster-city-label.leaflet-tooltip::before {
+  border-right-color: rgba(253, 248, 240, 0.9);
+}
+.poster-city-label.leaflet-tooltip-left::before {
+  border-right-color: transparent;
+  border-left-color: rgba(253, 248, 240, 0.9);
+}
