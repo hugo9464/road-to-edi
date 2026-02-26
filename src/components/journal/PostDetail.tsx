@@ -41,13 +41,8 @@ export default function PostDetail({ postId, title, onBack }: PostDetailProps) {
     async function load() {
       setLoading(true)
       try {
-        const [postRes, commentsRes] = await Promise.all([
-          fetch(`/api/posts/${postId}/bananas`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fingerprint: '__peek__' }) }),
-          fetch(`/api/posts/${postId}/comments`),
-        ])
+        const commentsRes = await fetch(`/api/posts/${postId}/comments`)
 
-        // Use the queries module via a simple endpoint-less approach:
-        // We'll fetch post data from supabase directly via the client
         const { createClient } = await import('@/lib/supabase/client')
         const supabase = createClient()
 
