@@ -1,14 +1,9 @@
 import { NextResponse } from 'next/server'
-import { isAdminAuthenticated } from '@/lib/admin/auth'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { slugify } from '@/lib/utils/slugify'
 import { notifySubscribersOfNewPost } from '@/lib/resend/notify'
 
 export async function POST(request: Request) {
-  if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
   const body = await request.json()
   const { title_fr, body_markdown, lat, lng, location, day } = body
 

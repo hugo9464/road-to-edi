@@ -13,11 +13,6 @@ async function getSupabase(): Promise<SupabaseClient> {
 const SEND_INTERVAL = 5 * 60 * 1000 // 5 minutes
 
 export default function PWAPage() {
-  const [authenticated, setAuthenticated] = useState(false)
-  const [pin, setPin] = useState('')
-  const [pinError, setPinError] = useState('')
-  const [pinLoading, setPinLoading] = useState(false)
-
   const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null)
   const [accuracy, setAccuracy] = useState<number | null>(null)
   const [status, setStatus] = useState<'idle' | 'watching' | 'error'>('idle')
@@ -35,36 +30,6 @@ export default function PWAPage() {
   const [postFiles, setPostFiles] = useState<File[]>([])
   const [publishing, setPublishing] = useState(false)
   const [publishMsg, setPublishMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
-
-  // Check if already authenticated on mount
-  useEffect(() => {
-    fetch('/api/admin/login').then((res) => {
-      if (res.ok) setAuthenticated(true)
-    }).catch(() => {})
-  }, [])
-
-  // Handle PIN login
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setPinError('')
-    setPinLoading(true)
-    try {
-      const res = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: pin }),
-      })
-      if (res.ok) {
-        setAuthenticated(true)
-      } else {
-        setPinError('Mot de passe incorrect')
-      }
-    } catch {
-      setPinError('Erreur de connexion')
-    } finally {
-      setPinLoading(false)
-    }
-  }
 
   // Initialize Supabase lazily
   useEffect(() => {
@@ -226,37 +191,6 @@ export default function PWAPage() {
     } finally {
       setPublishing(false)
     }
-  }
-
-  if (!authenticated) {
-    return (
-      <div className="flex min-h-dvh items-center justify-center bg-[#1a1a2e] px-4">
-        <form onSubmit={handleLogin} className="w-full max-w-sm rounded-2xl bg-[#16213e] p-8">
-          <h1 className="mb-6 text-center text-xl font-bold text-white">
-            Objectif Murrayfield
-          </h1>
-          <input
-            type="password"
-            value={pin}
-            onChange={(e) => setPin(e.target.value)}
-            placeholder="Mot de passe"
-            className="mb-4 w-full rounded-lg bg-[#1a1a2e] px-4 py-3 text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
-            autoFocus
-            required
-          />
-          {pinError && (
-            <p className="mb-3 text-center text-sm text-red-400">{pinError}</p>
-          )}
-          <button
-            type="submit"
-            disabled={pinLoading}
-            className="w-full rounded-lg bg-blue-600 py-3 font-medium text-white transition hover:bg-blue-500 disabled:opacity-50"
-          >
-            {pinLoading ? 'Connexion...' : 'Se connecter'}
-          </button>
-        </form>
-      </div>
-    )
   }
 
   return (

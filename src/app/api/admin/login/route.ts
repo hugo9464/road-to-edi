@@ -1,14 +1,6 @@
 import { NextResponse } from 'next/server'
-import { createHash, timingSafeEqual } from 'crypto'
-import { getAdminToken, isAdminAuthenticated } from '@/lib/admin/auth'
-
-// Check if already authenticated
-export async function GET() {
-  if (await isAdminAuthenticated()) {
-    return NextResponse.json({ ok: true })
-  }
-  return NextResponse.json({ ok: false }, { status: 401 })
-}
+import { timingSafeEqual } from 'crypto'
+import { getAdminToken } from '@/lib/admin/auth'
 
 export async function POST(request: Request) {
   const { password } = await request.json()

@@ -1,15 +1,10 @@
 import { NextResponse } from 'next/server'
-import { isAdminAuthenticated } from '@/lib/admin/auth'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
   const { id: postId } = await params
   const supabase = createAdminClient()
 
