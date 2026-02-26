@@ -4,7 +4,8 @@ import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import Link from 'next/link'
 
-import type { GpsPosition, SiteSettings } from '@/lib/supabase/types'
+import type { GpsPosition, SiteSettings, PostWithCounts } from '@/lib/supabase/types'
+import JournalOverlay from '@/components/journal/JournalOverlay'
 
 const HomeMapClient = dynamic(() => import('./HomeMapClient'), {
   ssr: false,
@@ -30,6 +31,7 @@ interface HomeSPAWrapperProps {
   settings: SiteSettings | null
   kmCovered: number
   day: number
+  posts: PostWithCounts[]
 }
 
 export default function HomeSPAWrapper({
@@ -38,13 +40,24 @@ export default function HomeSPAWrapper({
   settings,
   kmCovered,
   day,
+  posts,
 }: HomeSPAWrapperProps) {
   const [donationOpen, setDonationOpen] = useState(false)
+  const [journalOpen, setJournalOpen] = useState(false)
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null)
+
   const totalKm = settings?.total_distance_km ?? 1046
-  const instagramHandle = settings?.instagram_handle ?? ''
   const instagramUrl = 'https://www.instagram.com/hugo_a_velo/'
   const donationUrl = settings?.donation_url ?? ''
   const pct = totalKm > 0 ? Math.min(100, Math.round((kmCovered / totalKm) * 100)) : 0
+
+  const handlePostClick = (postId: string) => {
+    setSelectedPostId(postId)
+    setJournalOpen(true)
+  }
+
+  // Posts that have GPS coordinates (for map markers)
+  const mapPosts = posts.filter((p) => p.lat != null && p.lng != null)
 
   return (
     <div className="relative h-full w-full">
@@ -54,6 +67,8 @@ export default function HomeSPAWrapper({
         <HomeMapClient
           initialPosition={initialPosition}
           routeGeoJson={routeGeoJson}
+          posts={mapPosts}
+          onPostClick={handlePostClick}
         />
       </div>
 
@@ -104,8 +119,28 @@ export default function HomeSPAWrapper({
         </div>
       </div>
 
-      {/* ── Bottom: progress bar ── */}
-      <div className="absolute bottom-6 left-4 right-4 z-[1000] sm:left-1/2 sm:-translate-x-1/2 sm:w-80 sm:right-auto">
+      {/* ── Bottom: progress bar + journal button ── */}
+      <div className="absolute bottom-6 left-4 right-4 z-[1000] sm:left-1/2 sm:-translate-x-1/2 sm:w-96 sm:right-auto">
+        {/* Journal button */}
+        <div className="flex justify-end mb-2">
+          <button
+            onClick={() => { setSelectedPostId(null); setJournalOpen(true) }}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-amber-800/90 backdrop-blur-sm text-amber-50 text-sm font-semibold shadow-lg hover:bg-amber-900 hover:scale-105 transition-all duration-200"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </svg>
+            Journal de bord
+            {posts.length > 0 && (
+              <span className="bg-amber-50 text-amber-800 text-xs font-bold px-1.5 py-0.5 rounded-full">
+                {posts.length}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Progress bar */}
         <div className="rounded-xl bg-[#fdf8f0]/90 backdrop-blur-sm px-4 py-3 shadow-md">
           <div className="flex justify-between text-xs text-stone-400 mb-1.5">
             <span>Paris</span>
@@ -125,6 +160,15 @@ export default function HomeSPAWrapper({
           )}
         </div>
       </div>
+
+      {/* ── Journal overlay ── */}
+      {journalOpen && (
+        <JournalOverlay
+          posts={posts}
+          selectedPostId={selectedPostId}
+          onClose={() => { setJournalOpen(false); setSelectedPostId(null) }}
+        />
+      )}
 
       {/* ── Donation modal ── */}
       {donationOpen && (

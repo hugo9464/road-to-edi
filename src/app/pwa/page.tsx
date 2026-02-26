@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { compressImage } from '@/lib/utils/compress-image'
 
 // Lazily import to avoid SSR initialization
 async function getSupabase(): Promise<SupabaseClient> {
@@ -21,6 +22,14 @@ export default function PWAPage() {
   const lastSentRef = useRef<number>(0)
   const watchIdRef = useRef<number | null>(null)
   const supabaseRef = useRef<SupabaseClient | null>(null)
+
+  // Post form state
+  const [postTitle, setPostTitle] = useState('')
+  const [postBody, setPostBody] = useState('')
+  const [postLocation, setPostLocation] = useState('')
+  const [postFiles, setPostFiles] = useState<File[]>([])
+  const [publishing, setPublishing] = useState(false)
+  const [publishMsg, setPublishMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
 
   // Initialize Supabase lazily
   useEffect(() => {
@@ -122,6 +131,68 @@ export default function PWAPage() {
       })()
     : 'Never sent'
 
+  // Handle file selection (max 5)
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []).slice(0, 5)
+    setPostFiles(files)
+  }
+
+  // Publish post
+  const handlePublish = async () => {
+    if (!postTitle.trim()) return
+    setPublishing(true)
+    setPublishMsg(null)
+
+    try {
+      // 1. Create post
+      const res = await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title_fr: postTitle.trim(),
+          body_markdown: postBody.trim(),
+          lat: position?.lat ?? null,
+          lng: position?.lng ?? null,
+          location: postLocation.trim() || null,
+        }),
+      })
+
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || 'Failed to create post')
+      }
+
+      const post = await res.json()
+
+      // 2. Upload images if any
+      if (postFiles.length > 0) {
+        const formData = new FormData()
+        for (const file of postFiles) {
+          const compressed = await compressImage(file)
+          formData.append('files', compressed, file.name.replace(/\.[^.]+$/, '.jpg'))
+        }
+        const imgRes = await fetch(`/api/posts/${post.id}/images`, {
+          method: 'POST',
+          body: formData,
+        })
+        if (!imgRes.ok) {
+          const err = await imgRes.json()
+          console.error('Image upload failed:', err.error)
+        }
+      }
+
+      setPublishMsg({ type: 'ok', text: 'Post published!' })
+      setPostTitle('')
+      setPostBody('')
+      setPostLocation('')
+      setPostFiles([])
+    } catch (err) {
+      setPublishMsg({ type: 'err', text: err instanceof Error ? err.message : 'Error' })
+    } finally {
+      setPublishing(false)
+    }
+  }
+
   return (
     <div className="flex min-h-dvh flex-col bg-[#1a1a2e] p-6 text-white">
       <h1 className="mb-6 text-center text-xl font-bold">Objectif Murrayfield - GPS Tracker</h1>
@@ -198,10 +269,95 @@ export default function PWAPage() {
       <button
         onClick={forceSend}
         disabled={!position || sending}
-        className="mt-auto rounded-xl bg-blue-600 px-6 py-4 text-center font-semibold text-white transition hover:bg-blue-700 active:bg-blue-800 disabled:bg-gray-700 disabled:text-gray-500"
+        className="rounded-xl bg-blue-600 px-6 py-4 text-center font-semibold text-white transition hover:bg-blue-700 active:bg-blue-800 disabled:bg-gray-700 disabled:text-gray-500"
       >
         {sending ? 'Sending...' : 'Force send now'}
       </button>
+
+      {/* ── New Post section ── */}
+      <div className="mt-8 rounded-xl bg-[#16213e] p-5">
+        <h2 className="mb-4 text-sm font-medium uppercase tracking-wider text-gray-400">
+          Nouveau post
+        </h2>
+
+        <input
+          type="text"
+          placeholder="Titre *"
+          value={postTitle}
+          onChange={(e) => setPostTitle(e.target.value)}
+          className="mb-3 w-full rounded-lg bg-[#1a1a2e] px-4 py-3 text-sm text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
+        />
+
+        <textarea
+          placeholder="Corps du post (markdown)"
+          value={postBody}
+          onChange={(e) => setPostBody(e.target.value)}
+          rows={4}
+          className="mb-3 w-full rounded-lg bg-[#1a1a2e] px-4 py-3 text-sm text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+        />
+
+        <input
+          type="text"
+          placeholder="Lieu (optionnel)"
+          value={postLocation}
+          onChange={(e) => setPostLocation(e.target.value)}
+          className="mb-3 w-full rounded-lg bg-[#1a1a2e] px-4 py-3 text-sm text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
+        />
+
+        {position && (
+          <p className="mb-3 text-xs text-gray-500">
+            GPS: {position.lat.toFixed(4)}, {position.lng.toFixed(4)}
+          </p>
+        )}
+
+        <label className="mb-3 flex cursor-pointer items-center gap-2 rounded-lg bg-[#1a1a2e] px-4 py-3 text-sm text-gray-400 hover:text-white transition">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <polyline points="21 15 16 10 5 21" />
+          </svg>
+          {postFiles.length > 0 ? `${postFiles.length} photo(s)` : 'Ajouter des photos (max 5)'}
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            capture="environment"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+        </label>
+
+        {postFiles.length > 0 && (
+          <div className="mb-3 flex gap-2 overflow-x-auto pb-2">
+            {postFiles.map((f, i) => (
+              <div key={i} className="relative h-16 w-16 shrink-0 rounded-lg overflow-hidden bg-gray-800">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={URL.createObjectURL(f)}
+                  alt={f.name}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {publishMsg && (
+          <p className={`mb-3 rounded-lg px-4 py-2 text-center text-sm ${
+            publishMsg.type === 'ok' ? 'bg-green-900/40 text-green-300' : 'bg-red-900/40 text-red-300'
+          }`}>
+            {publishMsg.text}
+          </p>
+        )}
+
+        <button
+          onClick={handlePublish}
+          disabled={!postTitle.trim() || publishing}
+          className="w-full rounded-xl bg-orange-600 px-6 py-3 text-center font-semibold text-white transition hover:bg-orange-700 active:bg-orange-800 disabled:bg-gray-700 disabled:text-gray-500"
+        >
+          {publishing ? 'Publication...' : 'Publier'}
+        </button>
+      </div>
     </div>
   )
 }

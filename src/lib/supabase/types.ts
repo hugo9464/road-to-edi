@@ -32,3 +32,38 @@ export interface SiteSettings {
   fundraising_goal: number
   fundraising_current: number
 }
+
+export interface PostImage {
+  id: string
+  post_id: string
+  url: string
+  position: number
+  created_at: string
+}
+
+export interface Comment {
+  id: string
+  post_id: string
+  author: string
+  body: string
+  created_at: string
+}
+
+export interface Banana {
+  id: string
+  post_id: string
+  fingerprint: string
+  created_at: string
+}
+
+export interface PostWithCounts extends Post {
+  banana_count: number
+  comment_count: number
+}
+
+export interface PostWithDetails extends Post {
+  images: PostImage[]
+  banana_count: number
+  comment_count: number
+  comments: Comment[]
+}

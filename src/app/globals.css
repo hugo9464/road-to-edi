@@ -87,3 +87,13 @@ h1, h2, h3 {
   border-right-color: transparent;
   border-left-color: rgba(253, 248, 240, 0.9);
 }
+
+/* Journal overlay slide-in animation */
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out;
+}

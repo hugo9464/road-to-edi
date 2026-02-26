@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import fs from 'fs/promises'
 import path from 'path'
-import { getSiteSettings } from '@/lib/supabase/queries'
+import { getSiteSettings, getAllPostsWithCounts } from '@/lib/supabase/queries'
 import { createClient as createSupabase } from '@/lib/supabase/server'
 import type { GpsPosition } from '@/lib/supabase/types'
 import HomeSPAWrapper from '@/components/home/HomeSPAWrapper'
@@ -48,7 +48,7 @@ function dayNumber(startDate?: string | null): number {
 }
 
 export default async function HomePage() {
-  const [settingsR, gpsR, routeR] = await Promise.allSettled([
+  const [settingsR, gpsR, routeR, postsR] = await Promise.allSettled([
     getSiteSettings(),
     (async () => {
       const sb = createSupabase()
@@ -61,6 +61,7 @@ export default async function HomePage() {
       return data as GpsPosition | null
     })(),
     fs.readFile(path.join(process.cwd(), 'public', 'data', 'route.geojson'), 'utf-8').then(JSON.parse),
+    getAllPostsWithCounts(),
   ])
 
   const settings = settingsR.status === 'fulfilled' ? settingsR.value : null
@@ -68,6 +69,7 @@ export default async function HomePage() {
   const routeJson = routeR.status === 'fulfilled'
     ? routeR.value
     : { type: 'FeatureCollection', features: [] }
+  const posts = postsR.status === 'fulfilled' ? postsR.value : []
 
   const day = dayNumber(settings?.journey_start_date)
 
@@ -87,6 +89,7 @@ export default async function HomePage() {
         settings={settings}
         kmCovered={kmCovered}
         day={day}
+        posts={posts}
       />
     </div>
   )

@@ -94,3 +94,55 @@ CREATE POLICY "Service role upload images"
 CREATE POLICY "Service role delete images"
   ON storage.objects FOR DELETE
   USING (bucket_id = 'post-images' AND auth.role() = 'service_role');
+
+-- ============================================================
+-- Post images (multiple photos per post)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS post_images (
+  id         UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  post_id    UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  url        TEXT NOT NULL,
+  position   INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS post_images_post_id_idx ON post_images (post_id, position);
+
+ALTER TABLE post_images ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read post_images" ON post_images FOR SELECT USING (true);
+CREATE POLICY "Service role write post_images" ON post_images FOR ALL USING (auth.role() = 'service_role');
+
+-- ============================================================
+-- Comments
+-- ============================================================
+CREATE TABLE IF NOT EXISTS comments (
+  id         UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  post_id    UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  author     TEXT NOT NULL CHECK (char_length(author) BETWEEN 1 AND 50),
+  body       TEXT NOT NULL CHECK (char_length(body) BETWEEN 1 AND 500),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS comments_post_id_idx ON comments (post_id, created_at);
+
+ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read comments" ON comments FOR SELECT USING (true);
+CREATE POLICY "Public insert comments" ON comments FOR INSERT WITH CHECK (true);
+CREATE POLICY "Service role delete comments" ON comments FOR DELETE USING (auth.role() = 'service_role');
+
+-- ============================================================
+-- Bananas (likes with fingerprint dedup)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS bananas (
+  id           UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  post_id      UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  fingerprint  TEXT NOT NULL,
+  created_at   TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(post_id, fingerprint)
+);
+
+CREATE INDEX IF NOT EXISTS bananas_post_id_idx ON bananas (post_id);
+
+ALTER TABLE bananas ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read bananas" ON bananas FOR SELECT USING (true);
+CREATE POLICY "Public insert bananas" ON bananas FOR INSERT WITH CHECK (true);

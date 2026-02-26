@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, Polyline, CircleMarker, Marker, Tooltip } from
 import type { LatLngExpression } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { createClient } from '@/lib/supabase/client'
-import type { GpsPosition } from '@/lib/supabase/types'
+import type { GpsPosition, PostWithCounts } from '@/lib/supabase/types'
 import L from 'leaflet'
 
 /* ── Countdown to Scotland v France — 7 Mar 2026, 15:10 CET (14:10 UTC) ── */
@@ -54,6 +54,8 @@ interface FeatureCollection {
 interface HomeMapClientProps {
   initialPosition: GpsPosition | null
   routeGeoJson: FeatureCollection
+  posts: PostWithCounts[]
+  onPostClick: (postId: string) => void
 }
 
 function findNearestPointIndex(coordinates: [number, number][], lat: number, lng: number): number {
@@ -100,6 +102,8 @@ function EndpointCountdown({ coordinates }: { coordinates: [number, number][] })
 export default function HomeMapClient({
   initialPosition,
   routeGeoJson,
+  posts,
+  onPostClick,
 }: HomeMapClientProps) {
   const [position, setPosition] = useState<GpsPosition | null>(initialPosition)
 
@@ -161,6 +165,21 @@ export default function HomeMapClient({
             </Tooltip>
           </CircleMarker>
         )}
+
+        {/* Post markers */}
+        {posts.map((post) => (
+          <CircleMarker
+            key={post.id}
+            center={[post.lat!, post.lng!]}
+            radius={7}
+            pathOptions={{ color: '#fff', fillColor: '#ea580c', fillOpacity: 0.9, weight: 2 }}
+            eventHandlers={{ click: () => onPostClick(post.id) }}
+          >
+            <Tooltip direction="top" offset={[0, -8]}>
+              <span style={{ fontSize: 12, fontWeight: 600 }}>{post.title_fr}</span>
+            </Tooltip>
+          </CircleMarker>
+        ))}
 
         <EndpointCountdown coordinates={coordinates} />
       </MapContainer>
