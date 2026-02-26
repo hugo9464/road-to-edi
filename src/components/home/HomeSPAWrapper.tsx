@@ -190,9 +190,16 @@ export default function HomeSPAWrapper({
                 <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
-            <h2 className="font-[family-name:var(--font-lora)] text-xl font-bold text-amber-900 mb-4">
-              Le Souci Des Nôtres
-            </h2>
+            <div className="flex flex-col items-center mb-4">
+              <img
+                src="/images/logo-association.jpg"
+                alt="Le Souci des Nôtres"
+                className="w-24 h-24 rounded-full object-cover mb-3"
+              />
+              <h2 className="font-[family-name:var(--font-lora)] text-xl font-bold text-amber-900">
+                Le Souci Des Nôtres
+              </h2>
+            </div>
             <p className="text-sm text-[#7a6550] leading-relaxed mb-6">
               «&nbsp;Le Souci des Nôtres&nbsp;», basée à Alfortville, est une association qui lutte contre la pauvreté et la précarité par des actions comme des récoltes et distributions de produits de nécessité mais aussi des maraudes dans Paris.
             </p>
@@ -214,9 +221,6 @@ export default function HomeSPAWrapper({
                 Faire un don
               </Link>
             )}
-            <p className="text-[11px] text-[#a0937e] text-center mt-3 leading-snug">
-              Déductible à 66&nbsp;% des impôts — un don de 10&nbsp;€ ne vous coûte que 3,40&nbsp;€
-            </p>
           </div>
         </div>
       )}
