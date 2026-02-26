@@ -5,7 +5,7 @@ export default async function Footer() {
   const settings = await getSiteSettings()
 
   const instagramHandle = settings?.instagram_handle ?? ''
-  const donationUrl = settings?.donation_url ?? ''
+  const donationUrl = settings?.donation_url || 'https://www.helloasso.com/associations/le-souci-des-notres/formulaires/1'
   const instagramUrl = instagramHandle
     ? `https://instagram.com/${instagramHandle}`
     : 'https://instagram.com'
