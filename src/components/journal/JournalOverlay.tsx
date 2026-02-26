@@ -24,6 +24,7 @@ export default function JournalOverlay({ posts, selectedPostId, onClose }: Journ
             postId={viewingPostId}
             title={viewingPost.title_fr}
             onBack={() => setViewingPostId(null)}
+            onClose={onClose}
           />
         ) : (
           <>
