@@ -6,6 +6,7 @@ import type { LatLngExpression } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { createClient } from '@/lib/supabase/client'
 import type { GpsPosition } from '@/lib/supabase/types'
+import { smoothCoordinates } from '@/lib/smoothRoute'
 
 // Fix Leaflet default icon issue in Next.js
 import L from 'leaflet'
@@ -82,7 +83,7 @@ function RouteLayer({
   const feature = routeGeoJson.features[0]
   if (!feature) return null
 
-  const coordinates = feature.geometry.coordinates
+  const coordinates = useMemo(() => smoothCoordinates(feature.geometry.coordinates), [feature.geometry.coordinates])
   const totalKm = feature.properties.totalKm
 
   const { completed, remaining, kmProgress } = useMemo(() => {
@@ -176,7 +177,7 @@ export default function JourneyMap({
   }, [])
 
   const feature = routeGeoJson.features[0]
-  const coordinates = feature?.geometry.coordinates ?? []
+  const coordinates = useMemo(() => smoothCoordinates(feature?.geometry.coordinates ?? []), [feature?.geometry.coordinates])
   const totalKm = feature?.properties.totalKm ?? 1046
   const boatStartKm = (feature?.properties.boatStartKm as number | undefined) ?? 187
   const boatKm = (feature?.properties.boatKm as number | undefined) ?? 122

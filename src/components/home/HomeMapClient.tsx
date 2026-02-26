@@ -6,6 +6,7 @@ import type { LatLngExpression } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { createClient } from '@/lib/supabase/client'
 import type { GpsPosition, PostWithCounts } from '@/lib/supabase/types'
+import { smoothCoordinates } from '@/lib/smoothRoute'
 import L from 'leaflet'
 
 /* ── Countdown to Scotland v France — 7 Mar 2026, 15:10 CET (14:10 UTC) ── */
@@ -120,7 +121,8 @@ export default function HomeMapClient({
   }, [])
 
   const feature = routeGeoJson.features[0]
-  const coordinates = feature?.geometry.coordinates ?? []
+  const rawCoordinates = feature?.geometry.coordinates ?? []
+  const coordinates = useMemo(() => smoothCoordinates(rawCoordinates), [rawCoordinates])
 
   const { completed, remaining } = useMemo(() => {
     if (!position || coordinates.length === 0) {

@@ -3,6 +3,7 @@
 import { MapContainer, TileLayer, Polyline, CircleMarker, Tooltip } from 'react-leaflet'
 import type { LatLngExpression } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { smoothCoordinates } from '@/lib/smoothRoute'
 
 interface FeatureCollection {
   type: 'FeatureCollection'
@@ -21,7 +22,8 @@ const cities: { name: string; lat: number; lng: number }[] = [
 
 export default function PosterMap({ routeGeoJson }: { routeGeoJson: FeatureCollection }) {
   const feature = routeGeoJson.features[0]
-  const coordinates = feature?.geometry.coordinates ?? []
+  const rawCoordinates = feature?.geometry.coordinates ?? []
+  const coordinates = smoothCoordinates(rawCoordinates)
   const routePositions: LatLngExpression[] = coordinates.map(([lng, lat]) => [lat, lng])
 
   // Center map on the English Channel area to show full route

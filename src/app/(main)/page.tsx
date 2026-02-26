@@ -5,6 +5,7 @@ import { getSiteSettings, getAllPostsWithCounts } from '@/lib/supabase/queries'
 import { createClient as createSupabase } from '@/lib/supabase/server'
 import type { GpsPosition } from '@/lib/supabase/types'
 import HomeSPAWrapper from '@/components/home/HomeSPAWrapper'
+import { smoothCoordinates } from '@/lib/smoothRoute'
 
 export const dynamic = 'force-dynamic'
 
@@ -75,7 +76,7 @@ export default async function HomePage() {
 
   let kmCovered = 0
   if (gps && routeJson?.features?.[0]) {
-    const coords: [number, number][] = routeJson.features[0].geometry?.coordinates ?? []
+    const coords: [number, number][] = smoothCoordinates(routeJson.features[0].geometry?.coordinates ?? [])
     const boatStartKm: number = routeJson.features[0].properties?.boatStartKm ?? 187
     const boatKm: number = routeJson.features[0].properties?.boatKm ?? 122
     if (coords.length > 0) kmCovered = nearestPointKm(coords, gps.lat, gps.lng, boatStartKm, boatKm)
