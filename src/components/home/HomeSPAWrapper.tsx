@@ -214,6 +214,9 @@ export default function HomeSPAWrapper({
                 Faire un don
               </Link>
             )}
+            <p className="text-[11px] text-[#a0937e] text-center mt-3 leading-snug">
+              Déductible à 66&nbsp;% des impôts — un don de 10&nbsp;€ ne vous coûte que 3,40&nbsp;€
+            </p>
           </div>
         </div>
       )}
