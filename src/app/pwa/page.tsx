@@ -321,7 +321,6 @@ export default function PWAPage() {
             type="file"
             accept="image/*"
             multiple
-            capture="environment"
             onChange={handleFileChange}
             className="hidden"
           />
