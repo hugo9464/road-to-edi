@@ -177,8 +177,10 @@ export default function HomeMapClient({
             pathOptions={{ color: '#fff', fillColor: '#ea580c', fillOpacity: 0.9, weight: 2 }}
             eventHandlers={{ click: () => onPostClick(post.id) }}
           >
-            <Tooltip permanent direction="top" offset={[0, -8]} className="post-tooltip">
-              <span style={{ fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>{post.title_fr}</span>
+            <Tooltip permanent interactive direction="top" offset={[0, -8]} className="post-tooltip"
+              eventHandlers={{ click: () => onPostClick(post.id) }}
+            >
+              <span className="post-tooltip-label">{post.title_fr} ›</span>
             </Tooltip>
           </CircleMarker>
         ))}
