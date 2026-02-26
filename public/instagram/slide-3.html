@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Slide 3 — La cause & le match</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fdf8f0;
+    --bg-alt: #f7f3eb;
+    --text-dark: #2c1a0e;
+    --text-brown: #78350f;
+    --text-muted: #7a6550;
+    --accent-orange: #ea580c;
+    --accent-amber: #b45309;
+    --accent-dark: #92400e;
+    --dot-active: #ea580c;
+    --dot-inactive: #d9cdb8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1080px;
+    height: 1080px;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text-dark);
+  }
+
+  .slide {
+    width: 1080px;
+    height: 1080px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 60px 70px 70px;
+    gap: 32px;
+    overflow: hidden;
+  }
+
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    right: -200px;
+    width: 700px;
+    height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(234, 88, 12, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Match card */
+  .match-card {
+    background: rgba(253, 248, 240, 0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(217, 205, 184, 0.6);
+    border-radius: 24px;
+    padding: 44px 48px;
+    text-align: center;
+    z-index: 1;
+  }
+
+  .match-emoji {
+    font-size: 56px;
+    margin-bottom: 16px;
+  }
+
+  .match-title {
+    font-family: 'Lora', serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--text-brown);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .match-subtitle {
+    font-size: 22px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .match-venue {
+    font-size: 18px;
+    color: var(--accent-amber);
+    font-weight: 600;
+    margin-top: 10px;
+    letter-spacing: 1px;
+  }
+
+  /* Decorative separator */
+  .separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    z-index: 1;
+  }
+
+  .separator .line {
+    height: 1px;
+    width: 120px;
+    background: linear-gradient(90deg, transparent, var(--dot-inactive), transparent);
+  }
+
+  .separator .diamond {
+    width: 10px;
+    height: 10px;
+    background: var(--accent-orange);
+    transform: rotate(45deg);
+    border-radius: 2px;
+  }
+
+  /* Cause card */
+  .cause-card {
+    background: linear-gradient(135deg, var(--accent-dark) 0%, var(--text-brown) 100%);
+    border-radius: 24px;
+    padding: 40px 48px;
+    color: #fdf8f0;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .cause-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+  }
+
+  .cause-title {
+    font-family: 'Lora', serif;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+
+  .cause-desc {
+    font-size: 19px;
+    line-height: 1.6;
+    opacity: 0.92;
+    margin-bottom: 28px;
+  }
+
+  .goal-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: rgba(253, 248, 240, 0.14);
+    border: 1px solid rgba(253, 248, 240, 0.25);
+    border-radius: 20px;
+    padding: 20px 32px;
+  }
+
+  .goal-amount {
+    font-family: 'Lora', serif;
+    font-size: 34px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .goal-deduction {
+    font-size: 16px;
+    opacity: 0.8;
+  }
+
+  /* Dots */
+  .dots {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 1;
+  }
+  .dots .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--dot-inactive);
+  }
+  .dots .dot.active {
+    background: var(--dot-active);
+    width: 32px;
+    border-radius: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+  <!-- Match card -->
+  <div class="match-card">
+    <div class="match-emoji">🏉</div>
+    <div class="match-title">ÉCOSSE – FRANCE</div>
+    <div class="match-subtitle">Tournoi des Six Nations</div>
+    <div class="match-venue">📍 Murrayfield Stadium, Édimbourg</div>
+  </div>
+
+  <!-- Separator -->
+  <div class="separator">
+    <div class="line"></div>
+    <div class="diamond"></div>
+    <div class="line"></div>
+  </div>
+
+  <!-- Cause card -->
+  <div class="cause-card">
+    <div class="cause-icon">🤝</div>
+    <div class="cause-title">LE SOUCI DES NÔTRES</div>
+    <p class="cause-desc">
+      Association basée à Alfortville qui lutte contre la pauvreté et la précarité par des actions comme des récoltes et distributions de produits de nécessité mais aussi des maraudes dans Paris.
+    </p>
+    <div class="goal-badge">
+      <span class="goal-amount">Objectif : 5 000 €</span>
+      <span class="goal-deduction">10 € donné = 3,40 € après déduction fiscale (66%)</span>
+    </div>
+  </div>
+
+  <div class="dots">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+  </div>
+</div>
+</body>
+</html>

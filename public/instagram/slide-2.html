@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Slide 2 — L'itinéraire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fdf8f0;
+    --bg-alt: #f7f3eb;
+    --text-dark: #2c1a0e;
+    --text-brown: #78350f;
+    --text-muted: #7a6550;
+    --accent-orange: #ea580c;
+    --accent-amber: #b45309;
+    --accent-dark: #92400e;
+    --dot-active: #ea580c;
+    --dot-inactive: #d9cdb8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1080px;
+    height: 1080px;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text-dark);
+  }
+
+  .slide {
+    width: 1080px;
+    height: 1080px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 56px 80px 70px;
+    overflow: hidden;
+  }
+
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    right: -200px;
+    width: 700px;
+    height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(234, 88, 12, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .header h1 {
+    font-family: 'Lora', serif;
+    font-size: 44px;
+    font-weight: 700;
+    color: var(--text-brown);
+    letter-spacing: 3px;
+  }
+
+  .header p {
+    font-size: 20px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  /* Timeline */
+  .timeline {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    padding-left: 40px;
+  }
+
+  .stage {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 12px 0;
+  }
+
+  /* Vertical dotted line */
+  .stage::before {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    border-left: 3px dotted var(--dot-inactive);
+  }
+  .stage:first-child::before { top: 50%; }
+  .stage:last-child::before { bottom: 50%; }
+
+  .stage-number {
+    position: relative;
+    z-index: 1;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--accent-orange);
+    color: #fff;
+    font-weight: 700;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .stage-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    margin-left: 20px;
+    background: rgba(253, 248, 240, 0.92);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(217, 205, 184, 0.5);
+    border-radius: 16px;
+    padding: 14px 24px;
+  }
+
+  .stage-route {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+
+  .stage-detail {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .stage-km {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent-orange);
+  }
+
+  .stage-note {
+    font-size: 14px;
+    background: rgba(234, 88, 12, 0.1);
+    color: var(--accent-orange);
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  .ferry-icon { margin-right: 4px; }
+
+  /* Country bar */
+  .countries {
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    font-size: 20px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .countries span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Dots */
+  .dots {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 1;
+  }
+  .dots .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--dot-inactive);
+  }
+  .dots .dot.active {
+    background: var(--dot-active);
+    width: 32px;
+    border-radius: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="header">
+    <h1>L'ITINÉRAIRE</h1>
+    <p>Paris → Édimbourg</p>
+  </div>
+
+  <div class="timeline">
+    <div class="stage">
+      <div class="stage-number">1</div>
+      <div class="stage-content">
+        <div class="stage-route">Paris → Calais</div>
+        <div class="stage-detail">
+          <span class="stage-km">290 km</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-number">2</div>
+      <div class="stage-content">
+        <div class="stage-route">Calais → Dover</div>
+        <div class="stage-detail">
+          <span class="stage-note">⛴ Ferry</span>
+          <span class="stage-km">50 km</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-number">3</div>
+      <div class="stage-content">
+        <div class="stage-route">Dover → London</div>
+        <div class="stage-detail">
+          <span class="stage-km">125 km</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-number">4</div>
+      <div class="stage-content">
+        <div class="stage-route">London → Cambridge</div>
+        <div class="stage-detail">
+          <span class="stage-km">100 km</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-number">5</div>
+      <div class="stage-content">
+        <div class="stage-route">Cambridge → York</div>
+        <div class="stage-detail">
+          <span class="stage-km">250 km</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-number">6</div>
+      <div class="stage-content">
+        <div class="stage-route">York → Newcastle</div>
+        <div class="stage-detail">
+          <span class="stage-km">135 km</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-number">7</div>
+      <div class="stage-content">
+        <div class="stage-route">Newcastle → Edinburgh</div>
+        <div class="stage-detail">
+          <span class="stage-km">200 km</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="countries">
+    <span>🇫🇷 France</span>
+    <span>·</span>
+    <span>🌊</span>
+    <span>·</span>
+    <span>🏴󠁧󠁢󠁥󠁮󠁧󠁿 Angleterre</span>
+    <span>·</span>
+    <span>🏴󠁧󠁢󠁳󠁣󠁴󠁿 Écosse</span>
+  </div>
+
+  <div class="dots">
+    <div class="dot"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+</div>
+</body>
+</html>

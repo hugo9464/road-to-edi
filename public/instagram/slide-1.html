@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Slide 1 — Accroche</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fdf8f0;
+    --bg-alt: #f7f3eb;
+    --text-dark: #2c1a0e;
+    --text-brown: #78350f;
+    --text-muted: #7a6550;
+    --accent-orange: #ea580c;
+    --accent-amber: #b45309;
+    --accent-dark: #92400e;
+    --dot-active: #ea580c;
+    --dot-inactive: #d9cdb8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1080px;
+    height: 1080px;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text-dark);
+  }
+
+  .slide {
+    width: 1080px;
+    height: 1080px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    padding: 80px 60px;
+    overflow: hidden;
+  }
+
+  /* Radial accent top-right */
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    right: -200px;
+    width: 700px;
+    height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(234, 88, 12, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Decorative arc */
+  .arc-decor {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .title {
+    font-family: 'Lora', serif;
+    font-size: 88px;
+    font-weight: 700;
+    color: var(--text-brown);
+    text-align: center;
+    letter-spacing: 2px;
+    line-height: 1.05;
+    z-index: 1;
+  }
+
+  .subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-align: center;
+    z-index: 1;
+    margin-top: -16px;
+  }
+
+  .distance-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(234, 88, 12, 0.08);
+    border: 3px solid var(--accent-orange);
+    border-radius: 24px;
+    padding: 20px 56px;
+    z-index: 1;
+  }
+
+  .distance-badge span {
+    font-family: 'Lora', serif;
+    font-size: 72px;
+    font-weight: 700;
+    color: var(--accent-orange);
+    letter-spacing: 1px;
+  }
+
+  .info-line {
+    font-size: 28px;
+    color: var(--text-muted);
+    text-align: center;
+    z-index: 1;
+    letter-spacing: 1px;
+  }
+
+  .swipe-hint {
+    position: absolute;
+    bottom: 80px;
+    font-size: 18px;
+    color: var(--dot-inactive);
+    letter-spacing: 0.5px;
+    z-index: 1;
+  }
+
+  /* Dots */
+  .dots {
+    position: absolute;
+    bottom: 40px;
+    display: flex;
+    gap: 12px;
+    z-index: 1;
+  }
+  .dots .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--dot-inactive);
+  }
+  .dots .dot.active {
+    background: var(--dot-active);
+    width: 32px;
+    border-radius: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+  <!-- Decorative arc SVG -->
+  <svg class="arc-decor" width="800" height="800" viewBox="0 0 800 800" fill="none">
+    <circle cx="400" cy="400" r="340" stroke="rgba(234,88,12,0.10)" stroke-width="3" stroke-dasharray="16 12" fill="none"/>
+    <circle cx="400" cy="400" r="280" stroke="rgba(234,88,12,0.06)" stroke-width="2" stroke-dasharray="10 14" fill="none"/>
+  </svg>
+
+  <div class="title">OBJECTIF<br>MURRAYFIELD</div>
+  <div class="subtitle">Paris → Édimbourg à vélo</div>
+
+  <div class="distance-badge">
+    <span>1 046 km</span>
+  </div>
+
+  <div class="info-line">🚲&nbsp; 7 étapes · 2 pays · 1 match &nbsp;🏉</div>
+
+  <div class="swipe-hint">Glisse pour découvrir ›</div>
+
+  <div class="dots">
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+</div>
+</body>
+</html>
