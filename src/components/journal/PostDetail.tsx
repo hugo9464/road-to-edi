@@ -183,7 +183,7 @@ export default function PostDetail({ postId, title, onBack }: PostDetailProps) {
     <div className="flex h-full flex-col">
       {/* Header */}
       <div className="sticky top-0 z-10 flex items-center gap-3 bg-white/95 backdrop-blur-sm px-4 py-3 border-b border-stone-100">
-        <button onClick={onBack} className="text-stone-500 hover:text-stone-800 transition-colors">
+        <button onClick={onBack} className="text-stone-500 hover:text-stone-800 transition-colors shrink-0">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
@@ -193,130 +193,132 @@ export default function PostDetail({ postId, title, onBack }: PostDetailProps) {
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
-        {/* Image carousel */}
-        {post.images.length > 0 && (
-          <div
-            className="relative bg-stone-100 aspect-[4/3] overflow-hidden"
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={post.images[currentImage]?.url}
-              alt=""
-              className="h-full w-full object-cover transition-opacity duration-300"
-            />
-            {post.images.length > 1 && (
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-                {post.images.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentImage(i)}
-                    className={`h-2 w-2 rounded-full transition-colors ${
-                      i === currentImage ? 'bg-white' : 'bg-white/50'
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Post content */}
-        <div className="px-4 py-4">
-          <div className="flex items-center gap-2 text-xs text-stone-400 mb-2">
-            <span className="capitalize">{date}</span>
-            {post.location && (
-              <>
-                <span>·</span>
-                <span>{post.location}</span>
-              </>
-            )}
-            {post.day && (
-              <>
-                <span>·</span>
-                <span>Jour {post.day}</span>
-              </>
-            )}
-          </div>
-
-          <h1 className="text-xl font-bold text-stone-800 mb-3">{post.title_fr}</h1>
-
-          {post.body_markdown && (
-            <div className="prose prose-sm prose-stone max-w-none mb-4">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {post.body_markdown}
-              </ReactMarkdown>
+        <div className="mx-auto max-w-2xl">
+          {/* Image carousel */}
+          {post.images.length > 0 && (
+            <div
+              className="relative bg-stone-100 aspect-[4/3] sm:aspect-[16/9] overflow-hidden"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={post.images[currentImage]?.url}
+                alt=""
+                className="h-full w-full object-cover transition-opacity duration-300"
+              />
+              {post.images.length > 1 && (
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {post.images.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentImage(i)}
+                      className={`h-2 w-2 rounded-full transition-colors ${
+                        i === currentImage ? 'bg-white shadow' : 'bg-white/50'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
-          {/* Banana button */}
-          <div className="flex items-center gap-4 py-3 border-y border-stone-100 mb-4">
-            <button
-              onClick={handleBanana}
-              disabled={hasGivenBanana}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                hasGivenBanana
-                  ? 'bg-amber-100 text-amber-700 cursor-default'
-                  : 'bg-amber-50 text-amber-800 hover:bg-amber-100 active:scale-95'
-              } ${bananaAnimating ? 'animate-bounce' : ''}`}
-            >
-              <span className="text-lg">🍌</span>
-              <span>{bananaCount}</span>
-            </button>
-            <span className="text-xs text-stone-400">
-              {hasGivenBanana ? 'Merci !' : 'Donner une banane'}
-            </span>
-          </div>
+          {/* Post content */}
+          <div className="px-4 sm:px-6 py-5">
+            <div className="flex items-center gap-2 text-xs text-stone-500 mb-2">
+              <span className="capitalize">{date}</span>
+              {post.location && (
+                <>
+                  <span>·</span>
+                  <span>{post.location}</span>
+                </>
+              )}
+              {post.day && (
+                <>
+                  <span>·</span>
+                  <span>Jour {post.day}</span>
+                </>
+              )}
+            </div>
 
-          {/* Comments */}
-          <div>
-            <h3 className="font-semibold text-stone-700 text-sm mb-3">
-              Commentaires ({comments.length})
-            </h3>
+            <h1 className="text-xl sm:text-2xl font-bold text-stone-900 mb-4">{post.title_fr}</h1>
 
-            {comments.length > 0 && (
-              <div className="space-y-3 mb-4">
-                {comments.map((c) => (
-                  <div key={c.id} className="rounded-lg bg-stone-50 p-3">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium text-stone-700 text-sm">{c.author}</span>
-                      <span className="text-xs text-stone-400">
-                        {new Date(c.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
-                      </span>
-                    </div>
-                    <p className="text-sm text-stone-600 leading-relaxed">{c.body}</p>
-                  </div>
-                ))}
+            {post.body_markdown && (
+              <div className="mb-6 text-[15px] leading-relaxed text-stone-700 [&_p]:mb-3 [&_strong]:text-stone-900 [&_a]:text-amber-700 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-stone-800 [&_h2]:mt-5 [&_h2]:mb-2 [&_h3]:font-semibold [&_h3]:text-stone-800 [&_h3]:mt-4 [&_h3]:mb-1 [&_blockquote]:border-l-3 [&_blockquote]:border-amber-300 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-stone-500">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {post.body_markdown}
+                </ReactMarkdown>
               </div>
             )}
 
-            {/* Comment form */}
-            <form onSubmit={handleSubmitComment} className="space-y-2">
-              <input
-                type="text"
-                placeholder="Votre nom"
-                value={commentAuthor}
-                onChange={(e) => setCommentAuthor(e.target.value)}
-                maxLength={50}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm text-stone-800 placeholder-stone-400 outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"
-              />
-              <textarea
-                placeholder="Votre message..."
-                value={commentBody}
-                onChange={(e) => setCommentBody(e.target.value)}
-                maxLength={500}
-                rows={2}
-                className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm text-stone-800 placeholder-stone-400 outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent resize-none"
-              />
+            {/* Banana button */}
+            <div className="flex items-center gap-4 py-3 border-y border-stone-200 mb-5">
               <button
-                type="submit"
-                disabled={!commentAuthor.trim() || !commentBody.trim() || submittingComment}
-                className="w-full rounded-lg bg-amber-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-800 disabled:bg-stone-300 disabled:text-stone-500"
+                onClick={handleBanana}
+                disabled={hasGivenBanana}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  hasGivenBanana
+                    ? 'bg-amber-100 text-amber-700 cursor-default'
+                    : 'bg-amber-50 text-amber-800 hover:bg-amber-100 active:scale-95'
+                } ${bananaAnimating ? 'animate-bounce' : ''}`}
               >
-                {submittingComment ? 'Envoi...' : 'Envoyer'}
+                <span className="text-lg">🍌</span>
+                <span>{bananaCount}</span>
               </button>
-            </form>
+              <span className="text-sm text-stone-500">
+                {hasGivenBanana ? 'Merci !' : 'Donner une banane'}
+              </span>
+            </div>
+
+            {/* Comments */}
+            <div>
+              <h3 className="font-semibold text-stone-800 text-sm mb-3">
+                Commentaires ({comments.length})
+              </h3>
+
+              {comments.length > 0 && (
+                <div className="space-y-3 mb-4">
+                  {comments.map((c) => (
+                    <div key={c.id} className="rounded-lg bg-stone-50 p-3">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium text-stone-800 text-sm">{c.author}</span>
+                        <span className="text-xs text-stone-400">
+                          {new Date(c.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                        </span>
+                      </div>
+                      <p className="text-sm text-stone-700 leading-relaxed">{c.body}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Comment form */}
+              <form onSubmit={handleSubmitComment} className="space-y-2 max-w-md">
+                <input
+                  type="text"
+                  placeholder="Votre nom"
+                  value={commentAuthor}
+                  onChange={(e) => setCommentAuthor(e.target.value)}
+                  maxLength={50}
+                  className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm text-stone-800 placeholder-stone-400 outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"
+                />
+                <textarea
+                  placeholder="Votre message..."
+                  value={commentBody}
+                  onChange={(e) => setCommentBody(e.target.value)}
+                  maxLength={500}
+                  rows={3}
+                  className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm text-stone-800 placeholder-stone-400 outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent resize-none"
+                />
+                <button
+                  type="submit"
+                  disabled={!commentAuthor.trim() || !commentBody.trim() || submittingComment}
+                  className="rounded-lg bg-amber-700 px-6 py-2 text-sm font-semibold text-white transition hover:bg-amber-800 disabled:bg-stone-300 disabled:text-stone-500"
+                >
+                  {submittingComment ? 'Envoi...' : 'Envoyer'}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
