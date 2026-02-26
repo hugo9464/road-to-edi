@@ -144,17 +144,32 @@ export default function PostDetail({ postId, title, onBack, onClose }: PostDetai
   }
 
   // Swipe handling for image carousel
-  const [touchStart, setTouchStart] = useState<number | null>(null)
-  const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.touches[0].clientX)
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null)
+  const [swiping, setSwiping] = useState(false)
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart({ x: e.touches[0].clientX, y: e.touches[0].clientY })
+    setSwiping(false)
+  }
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!touchStart) return
+    const dx = Math.abs(e.touches[0].clientX - touchStart.x)
+    const dy = Math.abs(e.touches[0].clientY - touchStart.y)
+    // If horizontal movement dominates, prevent vertical scroll
+    if (dx > dy && dx > 10) {
+      setSwiping(true)
+      e.preventDefault()
+    }
+  }, [touchStart])
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStart === null || !post) return
-    const diff = touchStart - e.changedTouches[0].clientX
+    const diff = touchStart.x - e.changedTouches[0].clientX
     const total = post.images.length
     if (Math.abs(diff) > 50) {
       if (diff > 0 && currentImage < total - 1) setCurrentImage((i) => i + 1)
       if (diff < 0 && currentImage > 0) setCurrentImage((i) => i - 1)
     }
     setTouchStart(null)
+    setSwiping(false)
   }
 
   if (loading) {
@@ -204,8 +219,9 @@ export default function PostDetail({ postId, title, onBack, onClose }: PostDetai
           {/* Image carousel */}
           {post.images.length > 0 && (
             <div
-              className="relative bg-stone-100 aspect-[4/3] sm:aspect-[16/9] overflow-hidden"
+              className="relative bg-stone-100 aspect-[4/3] sm:aspect-[16/9] overflow-hidden touch-pan-y"
               onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
