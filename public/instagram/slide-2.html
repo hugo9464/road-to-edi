@@ -37,7 +37,8 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    padding: 56px 80px 70px;
+    align-items: center;
+    padding: 56px 60px 70px;
     overflow: hidden;
   }
 
@@ -55,7 +56,8 @@
 
   .header {
     text-align: center;
-    margin-bottom: 36px;
+    margin-bottom: 24px;
+    z-index: 1;
   }
 
   .header h1 {
@@ -66,116 +68,49 @@
     letter-spacing: 3px;
   }
 
-  .header p {
-    font-size: 20px;
-    color: var(--text-muted);
-    margin-top: 6px;
-  }
-
-  /* Timeline */
-  .timeline {
+  .map-container {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    position: relative;
-    padding-left: 40px;
-  }
-
-  .stage {
-    display: flex;
-    align-items: center;
-    position: relative;
-    padding: 12px 0;
-  }
-
-  /* Vertical dotted line */
-  .stage::before {
-    content: '';
-    position: absolute;
-    left: 18px;
-    top: 0;
-    bottom: 0;
-    width: 0;
-    border-left: 3px dotted var(--dot-inactive);
-  }
-  .stage:first-child::before { top: 50%; }
-  .stage:last-child::before { bottom: 50%; }
-
-  .stage-number {
-    position: relative;
-    z-index: 1;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: var(--accent-orange);
-    color: #fff;
-    font-weight: 700;
-    font-size: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
+    z-index: 1;
+    width: 100%;
   }
 
-  .stage-content {
+  .map-container svg {
+    max-height: 100%;
+    max-width: 100%;
+  }
+
+  .info-bar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    flex: 1;
-    margin-left: 20px;
-    background: rgba(253, 248, 240, 0.92);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(217, 205, 184, 0.5);
-    border-radius: 16px;
-    padding: 14px 24px;
+    justify-content: center;
+    gap: 32px;
+    z-index: 1;
+    margin-top: 20px;
+    margin-bottom: 8px;
   }
 
-  .stage-route {
+  .info-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(234, 88, 12, 0.08);
+    border: 2px solid var(--accent-orange);
+    border-radius: 16px;
+    padding: 10px 24px;
+    font-family: 'Lora', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent-orange);
+  }
+
+  .info-text {
     font-size: 22px;
     font-weight: 600;
-    color: var(--text-dark);
-  }
-
-  .stage-detail {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .stage-km {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--accent-orange);
-  }
-
-  .stage-note {
-    font-size: 14px;
-    background: rgba(234, 88, 12, 0.1);
-    color: var(--accent-orange);
-    padding: 3px 12px;
-    border-radius: 20px;
-    font-weight: 600;
-  }
-
-  .ferry-icon { margin-right: 4px; }
-
-  /* Country bar */
-  .countries {
-    margin-top: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    font-size: 20px;
     color: var(--text-muted);
-    font-weight: 500;
-  }
-
-  .countries span {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    letter-spacing: 1px;
   }
 
   /* Dots */
@@ -205,95 +140,95 @@
 <div class="slide">
   <div class="header">
     <h1>L'ITINÉRAIRE</h1>
-    <p>Paris → Édimbourg</p>
   </div>
 
-  <div class="timeline">
-    <div class="stage">
-      <div class="stage-number">1</div>
-      <div class="stage-content">
-        <div class="stage-route">Paris → Calais</div>
-        <div class="stage-detail">
-          <span class="stage-km">290 km</span>
-        </div>
-      </div>
-    </div>
+  <div class="map-container">
+    <svg width="860" height="760" viewBox="0 0 860 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- France silhouette (simplified) -->
+      <path d="M220,380 L260,340 L300,320 L340,300 L380,310 L400,280 L420,260 L440,280 L460,300 L480,340 L490,380 L500,420 L490,460 L470,500 L440,540 L400,570 L360,580 L320,560 L280,530 L250,490 L230,450 L220,420 Z"
+            fill="#f0e8d8" stroke="#d9cdb8" stroke-width="2.5"/>
+      <!-- Bretagne bump -->
+      <path d="M220,380 L190,370 L170,380 L180,400 L210,410 L230,400 L220,380 Z"
+            fill="#f0e8d8" stroke="#d9cdb8" stroke-width="2.5"/>
 
-    <div class="stage">
-      <div class="stage-number">2</div>
-      <div class="stage-content">
-        <div class="stage-route">Calais → Dover</div>
-        <div class="stage-detail">
-          <span class="stage-note">⛴ Ferry</span>
-          <span class="stage-km">50 km</span>
-        </div>
-      </div>
-    </div>
+      <!-- Great Britain silhouette (simplified) -->
+      <!-- England -->
+      <path d="M340,120 L360,100 L400,90 L430,100 L450,120 L460,150 L470,180 L460,210 L440,235 L420,250 L400,260 L380,255 L360,240 L345,220 L335,195 L330,170 L330,145 Z"
+            fill="#f0e8d8" stroke="#d9cdb8" stroke-width="2.5"/>
+      <!-- Scotland -->
+      <path d="M340,120 L330,100 L335,75 L350,55 L370,40 L395,30 L420,35 L440,50 L450,70 L445,95 L430,100 L400,90 L360,100 Z"
+            fill="#f0e8d8" stroke="#d9cdb8" stroke-width="2.5"/>
+      <!-- Wales bump -->
+      <path d="M335,195 L315,200 L310,220 L320,235 L340,230 L345,220 Z"
+            fill="#f0e8d8" stroke="#d9cdb8" stroke-width="2.5"/>
 
-    <div class="stage">
-      <div class="stage-number">3</div>
-      <div class="stage-content">
-        <div class="stage-route">Dover → London</div>
-        <div class="stage-detail">
-          <span class="stage-km">125 km</span>
-        </div>
-      </div>
-    </div>
+      <!-- Channel / water indication -->
+      <line x1="350" y1="265" x2="400" y2="275" stroke="#d9cdb8" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.5"/>
 
-    <div class="stage">
-      <div class="stage-number">4</div>
-      <div class="stage-content">
-        <div class="stage-route">London → Cambridge</div>
-        <div class="stage-detail">
-          <span class="stage-km">100 km</span>
-        </div>
-      </div>
-    </div>
+      <!-- Route: dashed orange line Paris → Calais → Dover → London → Cambridge → York → Newcastle → Edinburgh -->
+      <polyline points="410,340 400,315 385,295 370,275 360,260 365,245 370,230 380,220 395,195 400,175 410,155 420,135 420,110 410,85 395,55"
+                stroke="#ea580c" stroke-width="5" stroke-dasharray="14 8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 
-    <div class="stage">
-      <div class="stage-number">5</div>
-      <div class="stage-content">
-        <div class="stage-route">Cambridge → York</div>
-        <div class="stage-detail">
-          <span class="stage-km">250 km</span>
-        </div>
-      </div>
-    </div>
+      <!-- City dots + labels -->
+      <!-- Paris -->
+      <circle cx="410" cy="340" r="10" fill="#ea580c"/>
+      <circle cx="410" cy="340" r="5" fill="#fdf8f0"/>
+      <text x="432" y="348" font-family="'Lora', serif" font-size="24" font-weight="700" fill="#2c1a0e">Paris</text>
+      <text x="432" y="370" font-family="'Inter', sans-serif" font-size="15" fill="#7a6550">FR</text>
 
-    <div class="stage">
-      <div class="stage-number">6</div>
-      <div class="stage-content">
-        <div class="stage-route">York → Newcastle</div>
-        <div class="stage-detail">
-          <span class="stage-km">135 km</span>
-        </div>
-      </div>
-    </div>
+      <!-- Calais -->
+      <circle cx="370" cy="275" r="7" fill="#ea580c"/>
+      <circle cx="370" cy="275" r="3.5" fill="#fdf8f0"/>
+      <text x="330" y="268" font-family="'Inter', sans-serif" font-size="17" font-weight="600" fill="#7a6550">Calais</text>
 
-    <div class="stage">
-      <div class="stage-number">7</div>
-      <div class="stage-content">
-        <div class="stage-route">Newcastle → Edinburgh</div>
-        <div class="stage-detail">
-          <span class="stage-km">200 km</span>
-        </div>
-      </div>
-    </div>
+      <!-- Dover -->
+      <circle cx="365" cy="245" r="7" fill="#ea580c"/>
+      <circle cx="365" cy="245" r="3.5" fill="#fdf8f0"/>
+      <text x="310" y="240" font-family="'Inter', sans-serif" font-size="17" font-weight="600" fill="#7a6550">Dover</text>
+
+      <!-- Ferry indicator -->
+      <text x="340" y="262" font-family="'Inter', sans-serif" font-size="13" fill="#b45309" font-weight="600">⛴</text>
+
+      <!-- London -->
+      <circle cx="370" cy="230" r="7" fill="#ea580c"/>
+      <circle cx="370" cy="230" r="3.5" fill="#fdf8f0"/>
+      <text x="285" y="228" font-family="'Inter', sans-serif" font-size="17" font-weight="600" fill="#7a6550">London</text>
+
+      <!-- Cambridge -->
+      <circle cx="395" cy="195" r="7" fill="#ea580c"/>
+      <circle cx="395" cy="195" r="3.5" fill="#fdf8f0"/>
+      <text x="415" y="200" font-family="'Inter', sans-serif" font-size="17" font-weight="600" fill="#7a6550">Cambridge</text>
+
+      <!-- York -->
+      <circle cx="410" cy="155" r="7" fill="#ea580c"/>
+      <circle cx="410" cy="155" r="3.5" fill="#fdf8f0"/>
+      <text x="430" y="160" font-family="'Inter', sans-serif" font-size="17" font-weight="600" fill="#7a6550">York</text>
+
+      <!-- Newcastle -->
+      <circle cx="420" cy="135" r="7" fill="#ea580c"/>
+      <circle cx="420" cy="135" r="3.5" fill="#fdf8f0"/>
+      <text x="440" y="140" font-family="'Inter', sans-serif" font-size="17" font-weight="600" fill="#7a6550">Newcastle</text>
+
+      <!-- Edinburgh -->
+      <circle cx="395" cy="55" r="10" fill="#ea580c"/>
+      <circle cx="395" cy="55" r="5" fill="#fdf8f0"/>
+      <text x="417" y="50" font-family="'Lora', serif" font-size="24" font-weight="700" fill="#2c1a0e">Édimbourg</text>
+      <text x="417" y="72" font-family="'Inter', sans-serif" font-size="15" fill="#7a6550">SCO</text>
+
+      <!-- Small bike icon near route middle -->
+      <text x="440" y="192" font-size="26">🚲</text>
+    </svg>
   </div>
 
-  <div class="countries">
-    <span>🇫🇷 France</span>
-    <span>·</span>
-    <span>🌊</span>
-    <span>·</span>
-    <span>🏴󠁧󠁢󠁥󠁮󠁧󠁿 Angleterre</span>
-    <span>·</span>
-    <span>🏴󠁧󠁢󠁳󠁣󠁴󠁿 Écosse</span>
+  <div class="info-bar">
+    <div class="info-badge">1 046 km</div>
+    <div class="info-text">7 étapes · 2 pays</div>
   </div>
 
   <div class="dots">
     <div class="dot"></div>
     <div class="dot active"></div>
+    <div class="dot"></div>
     <div class="dot"></div>
     <div class="dot"></div>
   </div>

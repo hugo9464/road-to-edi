@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Slide 1 — Accroche</title>
+<title>Slide 1 — Intro personnelle</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
@@ -38,9 +38,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    padding: 72px 80px 70px;
     gap: 40px;
-    padding: 80px 60px;
     overflow: hidden;
   }
 
@@ -57,34 +56,47 @@
     pointer-events: none;
   }
 
-  /* Decorative arc */
-  .arc-decor {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-  }
-
   .title {
     font-family: 'Lora', serif;
-    font-size: 88px;
+    font-size: 52px;
     font-weight: 700;
     color: var(--text-brown);
     text-align: center;
     letter-spacing: 2px;
-    line-height: 1.05;
     z-index: 1;
   }
 
-  .subtitle {
-    font-family: 'Inter', sans-serif;
-    font-size: 32px;
-    font-weight: 500;
-    color: var(--text-muted);
-    text-align: center;
+  .glass-card {
+    background: rgba(253, 248, 240, 0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(217, 205, 184, 0.6);
+    border-radius: 24px;
+    padding: 48px 52px;
     z-index: 1;
-    margin-top: -16px;
+    width: 100%;
+  }
+
+  .narrative {
+    font-size: 26px;
+    line-height: 1.65;
+    color: var(--text-dark);
+  }
+
+  .narrative p {
+    margin-bottom: 20px;
+  }
+
+  .narrative p:last-child {
+    margin-bottom: 0;
+  }
+
+  .narrative .accent {
+    color: var(--accent-orange);
+    font-weight: 700;
+  }
+
+  .narrative .highlight {
+    font-weight: 600;
   }
 
   .distance-badge {
@@ -93,24 +105,16 @@
     justify-content: center;
     background: rgba(234, 88, 12, 0.08);
     border: 3px solid var(--accent-orange);
-    border-radius: 24px;
-    padding: 20px 56px;
+    border-radius: 20px;
+    padding: 14px 40px;
     z-index: 1;
   }
 
   .distance-badge span {
     font-family: 'Lora', serif;
-    font-size: 72px;
+    font-size: 52px;
     font-weight: 700;
     color: var(--accent-orange);
-    letter-spacing: 1px;
-  }
-
-  .info-line {
-    font-size: 28px;
-    color: var(--text-muted);
-    text-align: center;
-    z-index: 1;
     letter-spacing: 1px;
   }
 
@@ -127,6 +131,8 @@
   .dots {
     position: absolute;
     bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     gap: 12px;
     z-index: 1;
@@ -146,25 +152,26 @@
 </head>
 <body>
 <div class="slide">
-  <!-- Decorative arc SVG -->
-  <svg class="arc-decor" width="800" height="800" viewBox="0 0 800 800" fill="none">
-    <circle cx="400" cy="400" r="340" stroke="rgba(234,88,12,0.10)" stroke-width="3" stroke-dasharray="16 12" fill="none"/>
-    <circle cx="400" cy="400" r="280" stroke="rgba(234,88,12,0.06)" stroke-width="2" stroke-dasharray="10 14" fill="none"/>
-  </svg>
+  <div class="title">OBJECTIF MURRAYFIELD</div>
 
-  <div class="title">OBJECTIF<br>MURRAYFIELD</div>
-  <div class="subtitle">Paris → Édimbourg à vélo</div>
+  <div class="glass-card">
+    <div class="narrative">
+      <p>Demain, je pars pour un périple un peu particulier.</p>
+      <p>Mon objectif : rallier <span class="highlight">Édimbourg à vélo</span> depuis Paris — <span class="accent">1 046 km</span> en 7 étapes à travers la France et l'Angleterre.</p>
+      <p>Pourquoi ? Pour assister au match Écosse–France au Tournoi des Six Nations, mais aussi pour récolter des fonds pour une association qui me tient à cœur.</p>
+      <p><span class="highlight">Je vous emmène avec moi.</span></p>
+    </div>
+  </div>
 
   <div class="distance-badge">
     <span>1 046 km</span>
   </div>
 
-  <div class="info-line">🚲&nbsp; 7 étapes · 2 pays · 1 match &nbsp;🏉</div>
-
   <div class="swipe-hint">Glisse pour découvrir ›</div>
 
   <div class="dots">
     <div class="dot active"></div>
+    <div class="dot"></div>
     <div class="dot"></div>
     <div class="dot"></div>
     <div class="dot"></div>

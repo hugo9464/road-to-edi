@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Slide 3 — La cause & le match</title>
+<title>Slide 3 — Le match</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
@@ -37,8 +37,9 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    padding: 60px 70px 70px;
-    gap: 32px;
+    align-items: center;
+    padding: 72px 80px 70px;
+    gap: 36px;
     overflow: hidden;
   }
 
@@ -54,122 +55,93 @@
     pointer-events: none;
   }
 
-  /* Match card */
-  .match-card {
+  .title {
+    font-family: 'Lora', serif;
+    font-size: 52px;
+    font-weight: 700;
+    color: var(--text-brown);
+    text-align: center;
+    letter-spacing: 2px;
+    z-index: 1;
+  }
+
+  .glass-card {
     background: rgba(253, 248, 240, 0.92);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(217, 205, 184, 0.6);
     border-radius: 24px;
     padding: 44px 48px;
-    text-align: center;
     z-index: 1;
+    width: 100%;
+  }
+
+  .narrative {
+    font-size: 26px;
+    line-height: 1.65;
+    color: var(--text-dark);
+  }
+
+  .narrative p {
+    margin-bottom: 20px;
+  }
+
+  .narrative p:last-child {
+    margin-bottom: 0;
+  }
+
+  .narrative .highlight {
+    font-weight: 600;
+  }
+
+  /* Match info card (dark) */
+  .match-card {
+    background: linear-gradient(135deg, var(--accent-dark) 0%, var(--text-brown) 100%);
+    border-radius: 24px;
+    padding: 36px 44px;
+    color: #fdf8f0;
+    z-index: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 28px;
   }
 
   .match-emoji {
-    font-size: 56px;
-    margin-bottom: 16px;
+    font-size: 52px;
+    flex-shrink: 0;
   }
 
-  .match-title {
+  .match-details {
+    flex: 1;
+  }
+
+  .match-teams {
     font-family: 'Lora', serif;
-    font-size: 48px;
+    font-size: 30px;
     font-weight: 700;
-    color: var(--text-brown);
-    letter-spacing: 2px;
-    margin-bottom: 8px;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
   }
 
-  .match-subtitle {
-    font-size: 22px;
-    color: var(--text-muted);
+  .match-competition {
+    font-size: 18px;
+    opacity: 0.85;
+    margin-bottom: 10px;
     font-weight: 500;
   }
 
-  .match-venue {
-    font-size: 18px;
-    color: var(--accent-amber);
-    font-weight: 600;
-    margin-top: 10px;
-    letter-spacing: 1px;
-  }
-
-  /* Decorative separator */
-  .separator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    z-index: 1;
-  }
-
-  .separator .line {
-    height: 1px;
-    width: 120px;
-    background: linear-gradient(90deg, transparent, var(--dot-inactive), transparent);
-  }
-
-  .separator .diamond {
-    width: 10px;
-    height: 10px;
-    background: var(--accent-orange);
-    transform: rotate(45deg);
-    border-radius: 2px;
-  }
-
-  /* Cause card */
-  .cause-card {
-    background: linear-gradient(135deg, var(--accent-dark) 0%, var(--text-brown) 100%);
-    border-radius: 24px;
-    padding: 40px 48px;
-    color: #fdf8f0;
-    z-index: 1;
-    flex: 1;
+  .match-meta {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    gap: 4px;
+    font-size: 17px;
+    opacity: 0.8;
   }
 
-  .cause-icon {
-    font-size: 36px;
-    margin-bottom: 12px;
-  }
-
-  .cause-title {
-    font-family: 'Lora', serif;
-    font-size: 36px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    margin-bottom: 16px;
-  }
-
-  .cause-desc {
-    font-size: 19px;
-    line-height: 1.6;
-    opacity: 0.92;
-    margin-bottom: 28px;
-  }
-
-  .goal-badge {
+  .match-meta span {
     display: flex;
-    flex-direction: column;
     align-items: center;
     gap: 8px;
-    background: rgba(253, 248, 240, 0.14);
-    border: 1px solid rgba(253, 248, 240, 0.25);
-    border-radius: 20px;
-    padding: 20px 32px;
-  }
-
-  .goal-amount {
-    font-family: 'Lora', serif;
-    font-size: 34px;
-    font-weight: 700;
-    color: #fff;
-  }
-
-  .goal-deduction {
-    font-size: 16px;
-    opacity: 0.8;
   }
 
   /* Dots */
@@ -197,31 +169,25 @@
 </head>
 <body>
 <div class="slide">
-  <!-- Match card -->
+  <div class="title">LE MATCH</div>
+
+  <div class="glass-card">
+    <div class="narrative">
+      <p>Depuis que je suis gamin, le rugby fait partie de ma vie. Et le Tournoi des Six Nations, c'est le rendez-vous que je ne manque jamais.</p>
+      <p>Cette année, j'ai décidé d'aller voir <span class="highlight">Écosse–France à Murrayfield</span>. Mais pas en avion, pas en train — à vélo.</p>
+      <p><span class="highlight">Parce que le voyage fait partie de l'aventure.</span></p>
+    </div>
+  </div>
+
   <div class="match-card">
     <div class="match-emoji">🏉</div>
-    <div class="match-title">ÉCOSSE – FRANCE</div>
-    <div class="match-subtitle">Tournoi des Six Nations</div>
-    <div class="match-venue">📍 Murrayfield Stadium, Édimbourg</div>
-  </div>
-
-  <!-- Separator -->
-  <div class="separator">
-    <div class="line"></div>
-    <div class="diamond"></div>
-    <div class="line"></div>
-  </div>
-
-  <!-- Cause card -->
-  <div class="cause-card">
-    <div class="cause-icon">🤝</div>
-    <div class="cause-title">LE SOUCI DES NÔTRES</div>
-    <p class="cause-desc">
-      Association basée à Alfortville qui lutte contre la pauvreté et la précarité par des actions comme des récoltes et distributions de produits de nécessité mais aussi des maraudes dans Paris.
-    </p>
-    <div class="goal-badge">
-      <span class="goal-amount">Objectif : 5 000 €</span>
-      <span class="goal-deduction">10 € donné = 3,40 € après déduction fiscale (66%)</span>
+    <div class="match-details">
+      <div class="match-teams">ÉCOSSE – FRANCE</div>
+      <div class="match-competition">Tournoi des Six Nations</div>
+      <div class="match-meta">
+        <span>📍 Murrayfield Stadium, Édimbourg</span>
+        <span>📅 7 mars 2026</span>
+      </div>
     </div>
   </div>
 
@@ -229,6 +195,7 @@
     <div class="dot"></div>
     <div class="dot"></div>
     <div class="dot active"></div>
+    <div class="dot"></div>
     <div class="dot"></div>
   </div>
 </div>
