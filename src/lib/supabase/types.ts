@@ -56,15 +56,6 @@ export interface Banana {
   created_at: string
 }
 
-export interface Subscriber {
-  id: string
-  email: string
-  confirm_token: string
-  confirmed_at: string | null
-  unsubscribe_token: string
-  created_at: string
-}
-
 export interface PostWithCounts extends Post {
   banana_count: number
   comment_count: number

@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import PostCard from './PostCard'
 import PostDetail from './PostDetail'
-import SubscribeForm from '@/components/subscribe/SubscribeForm'
 import type { PostWithCounts } from '@/lib/supabase/types'
 
 interface JournalOverlayProps {
@@ -62,7 +61,6 @@ export default function JournalOverlay({ posts, selectedPostId, onClose }: Journ
                       highlighted={post.id === selectedPostId}
                     />
                   ))}
-                  <SubscribeForm />
                 </div>
               )}
             </div>

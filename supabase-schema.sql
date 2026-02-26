@@ -146,23 +146,3 @@ CREATE INDEX IF NOT EXISTS bananas_post_id_idx ON bananas (post_id);
 ALTER TABLE bananas ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public read bananas" ON bananas FOR SELECT USING (true);
 CREATE POLICY "Public insert bananas" ON bananas FOR INSERT WITH CHECK (true);
-
--- ============================================================
--- Email subscribers (double opt-in)
--- ============================================================
-CREATE TABLE IF NOT EXISTS subscribers (
-  id                UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  email             TEXT NOT NULL UNIQUE,
-  confirm_token     TEXT NOT NULL DEFAULT encode(gen_random_bytes(32), 'hex'),
-  confirmed_at      TIMESTAMPTZ,
-  unsubscribe_token TEXT NOT NULL DEFAULT encode(gen_random_bytes(32), 'hex'),
-  created_at        TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE INDEX IF NOT EXISTS subscribers_email_idx ON subscribers (email);
-CREATE INDEX IF NOT EXISTS subscribers_confirm_token_idx ON subscribers (confirm_token);
-CREATE INDEX IF NOT EXISTS subscribers_unsubscribe_token_idx ON subscribers (unsubscribe_token);
-
-ALTER TABLE subscribers ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public insert subscribers" ON subscribers FOR INSERT WITH CHECK (true);
-CREATE POLICY "Service role full subscribers" ON subscribers FOR ALL USING (auth.role() = 'service_role');
