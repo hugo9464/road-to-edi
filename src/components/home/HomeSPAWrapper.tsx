@@ -194,7 +194,7 @@ export default function HomeSPAWrapper({
               Le Souci Des Nôtres
             </h2>
             <p className="text-sm text-[#7a6550] leading-relaxed mb-6">
-              L&apos;association Le Souci Des Nôtres a pour but d&apos;aider les plus démunis, sans critère de distinctions, par le biais d&apos;actions solidaires, humanitaires ou sociales, en France ou à l&apos;étranger : maraudes, distributions alimentaires et collectes alimentaires auprès de petites ou grandes surfaces&nbsp;; distributions de colis alimentaires, aide aux orphelinats à l&apos;étranger (envoi de médicaments, équipements sportifs, fournitures scolaires, etc.)&nbsp;; financement de construction de puits à l&apos;étranger&nbsp;; organisation d&apos;événements sportifs et rencontres pour financer des actions précises. Soutenez nos actions, partagez nos valeurs et impliquez-vous dans la vie de l&apos;Association grâce à une cotisation annuelle.
+              «&nbsp;Le Souci des Nôtres&nbsp;», basée à Alfortville, est une association qui lutte contre la pauvreté et la précarité par des actions comme des récoltes et distributions de produits de nécessité mais aussi des maraudes dans Paris.
             </p>
             {donationUrl ? (
               <a
