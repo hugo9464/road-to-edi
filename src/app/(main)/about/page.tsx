@@ -1,7 +1,7 @@
 const stages = [
-  { from: 'Paris', to: 'Calais', km: 290 },
-  { from: 'Calais', to: 'Dover', km: 50, note: 'Ferry' },
-  { from: 'Dover', to: 'London', km: 125 },
+  { from: 'Paris', to: 'Dieppe', km: 200 },
+  { from: 'Dieppe', to: 'Newhaven', km: 115, note: 'Ferry' },
+  { from: 'Newhaven', to: 'London', km: 100 },
   { from: 'London', to: 'Cambridge', km: 100 },
   { from: 'Cambridge', to: 'York', km: 250 },
   { from: 'York', to: 'Newcastle', km: 135 },
