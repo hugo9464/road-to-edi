@@ -72,6 +72,9 @@ CREATE TABLE IF NOT EXISTS site_settings (
 
 INSERT INTO site_settings (id) VALUES (1) ON CONFLICT DO NOTHING;
 
+-- Migration: add custom route storage (run if column doesn't exist yet)
+ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS route_geojson JSONB;
+
 ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public read settings"         ON site_settings FOR SELECT USING (true);
 CREATE POLICY "Service role write settings"  ON site_settings FOR ALL   USING (auth.role() = 'service_role');

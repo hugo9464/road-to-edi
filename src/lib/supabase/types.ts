@@ -31,6 +31,7 @@ export interface SiteSettings {
   donation_url: string
   fundraising_goal: number
   fundraising_current: number
+  route_geojson: Record<string, unknown> | null
 }
 
 export interface PostImage {

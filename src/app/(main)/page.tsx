@@ -49,7 +49,7 @@ function dayNumber(startDate?: string | null): number {
 }
 
 export default async function HomePage() {
-  const [settingsR, gpsR, routeR, postsR] = await Promise.allSettled([
+  const [settingsR, gpsR, defaultRouteR, postsR] = await Promise.allSettled([
     getSiteSettings(),
     (async () => {
       const sb = createSupabase()
@@ -67,9 +67,11 @@ export default async function HomePage() {
 
   const settings = settingsR.status === 'fulfilled' ? settingsR.value : null
   const gps = gpsR.status === 'fulfilled' ? gpsR.value : null
-  const routeJson = routeR.status === 'fulfilled'
-    ? routeR.value
+  const defaultRoute = defaultRouteR.status === 'fulfilled'
+    ? defaultRouteR.value
     : { type: 'FeatureCollection', features: [] }
+  // Use custom route from DB if available, otherwise fall back to static file
+  const routeJson = settings?.route_geojson ?? defaultRoute
   const posts = postsR.status === 'fulfilled' ? postsR.value : []
 
   const day = dayNumber(settings?.journey_start_date)
