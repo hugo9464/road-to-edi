@@ -4,6 +4,79 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { compressImage } from '@/lib/utils/compress-image'
 
+function GpxSection() {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+  const [msg, setMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
+  const [routeName, setRouteName] = useState<string | null>(null)
+
+  async function handleGpx(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    setMsg(null)
+    try {
+      const formData = new FormData()
+      formData.append('gpx', file)
+      const res = await fetch('/api/admin/gpx-upload', { method: 'POST', body: formData })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Erreur upload')
+      setRouteName(`${file.name.replace(/\.gpx$/i, '')} — ${data.distanceKm} km (${data.points} pts)`)
+      setMsg({ type: 'ok', text: 'Trace mise à jour !' })
+    } catch (err) {
+      setMsg({ type: 'err', text: err instanceof Error ? err.message : 'Erreur' })
+    } finally {
+      setUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  async function handleReset() {
+    setUploading(true)
+    setMsg(null)
+    try {
+      const res = await fetch('/api/admin/gpx-upload', { method: 'DELETE' })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Erreur')
+      setRouteName(null)
+      setMsg({ type: 'ok', text: 'Route par défaut restaurée' })
+    } catch (err) {
+      setMsg({ type: 'err', text: err instanceof Error ? err.message : 'Erreur' })
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  return (
+    <div className="mt-6 rounded-xl bg-[#16213e] p-5">
+      <h2 className="mb-4 text-sm font-medium uppercase tracking-wider text-gray-400">
+        Trace GPX
+      </h2>
+      {routeName && (
+        <p className="mb-3 text-xs text-green-400">{routeName}</p>
+      )}
+      <div className="flex gap-3 flex-wrap">
+        <label className={`cursor-pointer rounded-xl px-5 py-3 text-sm font-semibold text-white transition ${uploading ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'}`}>
+          {uploading ? 'Upload...' : 'Uploader un GPX'}
+          <input ref={fileInputRef} type="file" accept=".gpx" className="hidden" onChange={handleGpx} disabled={uploading} />
+        </label>
+        <button
+          onClick={handleReset}
+          disabled={uploading}
+          className="rounded-xl bg-gray-700 px-5 py-3 text-sm font-semibold text-gray-300 transition hover:bg-gray-600 disabled:opacity-50"
+        >
+          Route par défaut
+        </button>
+      </div>
+      {msg && (
+        <p className={`mt-3 rounded-lg px-4 py-2 text-sm ${msg.type === 'ok' ? 'bg-green-900/40 text-green-300' : 'bg-red-900/40 text-red-300'}`}>
+          {msg.text}
+        </p>
+      )}
+    </div>
+  )
+}
+
 // Lazily import to avoid SSR initialization
 async function getSupabase(): Promise<SupabaseClient> {
   const { createClient } = await import('@/lib/supabase/client')
@@ -346,6 +419,8 @@ export default function PWAPage() {
           {publishing ? 'Publication...' : 'Publier'}
         </button>
       </div>
+
+      <GpxSection />
     </div>
   )
 }

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import fs from 'fs/promises'
 import path from 'path'
 import { getSiteSettings, getAllPostsWithCounts } from '@/lib/supabase/queries'
+import { getCustomRoute } from '@/lib/supabase/route-storage'
 import { createClient as createSupabase } from '@/lib/supabase/server'
 import type { GpsPosition } from '@/lib/supabase/types'
 import HomeSPAWrapper from '@/components/home/HomeSPAWrapper'
@@ -49,7 +50,7 @@ function dayNumber(startDate?: string | null): number {
 }
 
 export default async function HomePage() {
-  const [settingsR, gpsR, routeR, postsR] = await Promise.allSettled([
+  const [settingsR, gpsR, defaultRouteR, customRouteR, postsR] = await Promise.allSettled([
     getSiteSettings(),
     (async () => {
       const sb = createSupabase()
@@ -62,14 +63,18 @@ export default async function HomePage() {
       return data as GpsPosition | null
     })(),
     fs.readFile(path.join(process.cwd(), 'public', 'data', 'route.geojson'), 'utf-8').then(JSON.parse),
+    getCustomRoute(),
     getAllPostsWithCounts(),
   ])
 
   const settings = settingsR.status === 'fulfilled' ? settingsR.value : null
   const gps = gpsR.status === 'fulfilled' ? gpsR.value : null
-  const routeJson = routeR.status === 'fulfilled'
-    ? routeR.value
+  const defaultRoute = defaultRouteR.status === 'fulfilled'
+    ? defaultRouteR.value
     : { type: 'FeatureCollection', features: [] }
+  const customRoute = customRouteR.status === 'fulfilled' ? customRouteR.value : null
+  // Use custom route from Storage if available, otherwise fall back to static file
+  const routeJson = customRoute ?? defaultRoute
   const posts = postsR.status === 'fulfilled' ? postsR.value : []
 
   const day = dayNumber(settings?.journey_start_date)
