@@ -47,7 +47,7 @@ export default function HomeSPAWrapper({
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null)
 
   const totalKm = settings?.total_distance_km ?? 1046
-  const instagramUrl = 'https://www.instagram.com/hugo_a_velo/'
+  const instagramUrl = 'https://www.instagram.com/hugo_deraille/'
   const donationUrl = settings?.donation_url || 'https://www.helloasso.com/associations/le-souci-des-notres/formulaires/1'
   const pct = totalKm > 0 ? Math.min(100, Math.round((kmCovered / totalKm) * 100)) : 0
 
