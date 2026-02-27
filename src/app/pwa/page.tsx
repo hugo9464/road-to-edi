@@ -10,8 +10,6 @@ async function getSupabase(): Promise<SupabaseClient> {
   return createClient()
 }
 
-const SEND_INTERVAL = 5 * 60 * 1000 // 5 minutes
-
 export default function PWAPage() {
   const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null)
   const [accuracy, setAccuracy] = useState<number | null>(null)
@@ -19,7 +17,6 @@ export default function PWAPage() {
   const [errorMsg, setErrorMsg] = useState('')
   const [lastSent, setLastSent] = useState<Date | null>(null)
   const [sending, setSending] = useState(false)
-  const lastSentRef = useRef<number>(0)
   const watchIdRef = useRef<number | null>(null)
   const supabaseRef = useRef<SupabaseClient | null>(null)
 
@@ -59,9 +56,7 @@ export default function PWAPage() {
         return
       }
 
-      const now = Date.now()
-      lastSentRef.current = now
-      setLastSent(new Date(now))
+      setLastSent(new Date())
     } catch (err) {
       console.error('Failed to send position:', err)
     } finally {
@@ -91,12 +86,6 @@ export default function PWAPage() {
         setPosition({ lat: latitude, lng: longitude })
         setAccuracy(acc)
         setStatus('watching')
-
-        // Debounce: send every 5 minutes
-        const now = Date.now()
-        if (now - lastSentRef.current >= SEND_INTERVAL) {
-          sendPosition(latitude, longitude, acc)
-        }
       },
       (err) => {
         setStatus('error')
@@ -114,7 +103,7 @@ export default function PWAPage() {
         navigator.geolocation.clearWatch(watchIdRef.current)
       }
     }
-  }, [sendPosition])
+  }, [])
 
   // "Last sent X min ago" display
   const [now, setNow] = useState(Date.now())
