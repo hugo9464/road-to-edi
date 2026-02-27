@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { isAdminAuthenticated } from '@/lib/admin/auth'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getCustomRoute } from '@/lib/supabase/route-storage'
 import type { SiteSettings } from '@/lib/supabase/types'
 import SettingsForm from '@/components/admin/SettingsForm'
 import GpxUpload from '@/components/admin/GpxUpload'
@@ -24,13 +25,10 @@ export default async function AdminSettingsPage() {
     donation_url: '',
     fundraising_goal: 0,
     fundraising_current: 0,
-    route_geojson: null,
   }
 
-  // Extract current custom route info if present
-  const customRoute = defaults.route_geojson as {
-    features?: Array<{ properties?: { name?: string; totalKm?: number } }>
-  } | null
+  // Check Storage for a custom route file
+  const customRoute = await getCustomRoute()
   const currentRouteInfo = customRoute?.features?.[0]?.properties
     ? {
         name: String(customRoute.features[0].properties.name ?? 'Trace personnalisée'),

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { isAdminAuthenticated } from '@/lib/admin/auth'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { uploadCustomRoute, deleteCustomRoute } from '@/lib/supabase/route-storage'
 
 function haversineKm([lng1, lat1]: [number, number], [lng2, lat2]: [number, number]): number {
   const R = 6371
@@ -12,63 +12,39 @@ function haversineKm([lng1, lat1]: [number, number], [lng2, lat2]: [number, numb
 
 function parseGpx(gpxText: string): [number, number][] {
   const coords: [number, number][] = []
-  // Match <trkpt lat="..." lon="..."> or <wpt lat="..." lon="...">
-  const trkptRegex = /<(?:trkpt|wpt)\s[^>]*lat="([^"]+)"[^>]*lon="([^"]+)"/g
-  const trkptRegex2 = /<(?:trkpt|wpt)\s[^>]*lon="([^"]+)"[^>]*lat="([^"]+)"/g
-
+  // Match <trkpt lat="..." lon="..."> with any attribute order
+  const re = /<(?:trkpt|wpt)\b([^>]*)>/g
   let match: RegExpExecArray | null
-
-  // Try lat first variant
-  const matches1: [number, number][] = []
-  while ((match = trkptRegex.exec(gpxText)) !== null) {
-    const lat = parseFloat(match[1])
-    const lon = parseFloat(match[2])
-    if (!isNaN(lat) && !isNaN(lon)) {
-      matches1.push([lon, lat]) // GeoJSON: [lng, lat]
+  while ((match = re.exec(gpxText)) !== null) {
+    const attrs = match[1]
+    const latM = /lat="([^"]+)"/.exec(attrs)
+    const lonM = /lon="([^"]+)"/.exec(attrs)
+    if (latM && lonM) {
+      const lat = parseFloat(latM[1])
+      const lon = parseFloat(lonM[1])
+      if (!isNaN(lat) && !isNaN(lon)) coords.push([lon, lat]) // GeoJSON: [lng, lat]
     }
   }
-
-  // Try lon first variant
-  const matches2: [number, number][] = []
-  while ((match = trkptRegex2.exec(gpxText)) !== null) {
-    const lon = parseFloat(match[1])
-    const lat = parseFloat(match[2])
-    if (!isNaN(lat) && !isNaN(lon)) {
-      matches2.push([lon, lat])
-    }
-  }
-
-  // Use whichever found more points
-  const points = matches1.length >= matches2.length ? matches1 : matches2
-  coords.push(...points)
-
   return coords
 }
 
 function totalDistanceKm(coords: [number, number][]): number {
   let total = 0
-  for (let i = 1; i < coords.length; i++) {
-    total += haversineKm(coords[i - 1], coords[i])
-  }
+  for (let i = 1; i < coords.length; i++) total += haversineKm(coords[i - 1], coords[i])
   return Math.round(total)
 }
 
 export async function POST(request: Request) {
-  const authed = await isAdminAuthenticated()
-  if (!authed) {
+  if (!(await isAdminAuthenticated())) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
   }
 
   try {
     const formData = await request.formData()
     const file = formData.get('gpx') as File | null
-
-    if (!file) {
-      return NextResponse.json({ error: 'Fichier GPX manquant' }, { status: 400 })
-    }
+    if (!file) return NextResponse.json({ error: 'Fichier GPX manquant' }, { status: 400 })
 
     const gpxText = await file.text()
-
     const coordinates = parseGpx(gpxText)
 
     if (coordinates.length < 2) {
@@ -76,7 +52,6 @@ export async function POST(request: Request) {
     }
 
     const distanceKm = totalDistanceKm(coordinates)
-
     const routeGeoJson = {
       type: 'FeatureCollection',
       features: [
@@ -89,27 +64,12 @@ export async function POST(request: Request) {
             boatStartKm: distanceKm + 1,
             boatEndKm: distanceKm + 1,
           },
-          geometry: {
-            type: 'LineString',
-            coordinates,
-          },
+          geometry: { type: 'LineString', coordinates },
         },
       ],
     }
 
-    const supabase = createAdminClient()
-    const { error } = await supabase
-      .from('site_settings')
-      .upsert({
-        id: 1,
-        route_geojson: routeGeoJson,
-        total_distance_km: distanceKm,
-      })
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 })
-    }
-
+    await uploadCustomRoute(routeGeoJson)
     return NextResponse.json({ ok: true, points: coordinates.length, distanceKm })
   } catch (err: unknown) {
     return NextResponse.json(
@@ -120,20 +80,16 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE() {
-  const authed = await isAdminAuthenticated()
-  if (!authed) {
+  if (!(await isAdminAuthenticated())) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
   }
-
-  const supabase = createAdminClient()
-  const { error } = await supabase
-    .from('site_settings')
-    .update({ route_geojson: null })
-    .eq('id', 1)
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 })
+  try {
+    await deleteCustomRoute()
+    return NextResponse.json({ ok: true })
+  } catch (err: unknown) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : 'Erreur inconnue' },
+      { status: 500 }
+    )
   }
-
-  return NextResponse.json({ ok: true })
 }
