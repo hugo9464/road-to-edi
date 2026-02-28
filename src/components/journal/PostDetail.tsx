@@ -31,19 +31,25 @@ interface PostData {
 const translationCache = new Map<string, string>()
 
 async function translateText(text: string): Promise<string> {
-  if (!text) return text
+  if (!text.trim()) return text
   const cached = translationCache.get(text)
   if (cached !== undefined) return cached
 
-  const res = await fetch('/api/translate', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text }),
-  })
-  if (!res.ok) return text
-  const { translated } = await res.json()
-  if (translated) translationCache.set(text, translated)
-  return translated ?? text
+  try {
+    // Call MyMemory API directly from the browser (supports CORS, free, no auth needed)
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=fr|en`
+    const res = await fetch(url)
+    if (!res.ok) return text
+    const data = await res.json()
+    const translated: string | undefined = data?.responseData?.translatedText
+    if (translated && data?.responseStatus === 200) {
+      translationCache.set(text, translated)
+      return translated
+    }
+  } catch {
+    // Fall back to original text
+  }
+  return text
 }
 
 export default function PostDetail({ postId, title, lang, onBack, onClose }: PostDetailProps) {
