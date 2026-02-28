@@ -1,18 +1,22 @@
 'use client'
 
 import type { PostWithCounts } from '@/lib/supabase/types'
+import type { Lang } from '@/contexts/LanguageContext'
 
 interface PostCardProps {
   post: PostWithCounts
   onClick: () => void
   highlighted?: boolean
+  lang?: Lang
 }
 
-export default function PostCard({ post, onClick, highlighted }: PostCardProps) {
-  const date = new Date(post.published_at).toLocaleDateString('fr-FR', {
+export default function PostCard({ post, onClick, highlighted, lang = 'fr' }: PostCardProps) {
+  const date = new Date(post.published_at).toLocaleDateString(lang === 'en' ? 'en-GB' : 'fr-FR', {
     day: 'numeric',
     month: 'short',
   })
+
+  const title = lang === 'en' && post.title_en ? post.title_en : post.title_fr
 
   return (
     <button
@@ -47,7 +51,7 @@ export default function PostCard({ post, onClick, highlighted }: PostCardProps) 
           )}
         </div>
         <h3 className="font-semibold text-stone-800 text-sm leading-snug line-clamp-1">
-          {post.title_fr}
+          {title}
         </h3>
         {post.body_markdown && (
           <p className="text-xs text-stone-500 mt-0.5 line-clamp-2 leading-relaxed">

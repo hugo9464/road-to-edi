@@ -1,3 +1,7 @@
+'use client'
+
+import { useT } from '@/contexts/LanguageContext'
+
 const stages = [
   { from: 'Paris', to: 'Dieppe', km: 200 },
   { from: 'Dieppe', to: 'Newhaven', km: 115, note: 'Ferry' },
@@ -8,53 +12,39 @@ const stages = [
   { from: 'Newcastle', to: 'Edinburgh', km: 200 },
 ]
 
+const totalKm = 1046
+
 export default function AboutPage() {
-  const totalKm = 1046
+  const t = useT()
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Hero */}
       <section className="mb-12 text-center">
-        <h1 className="mb-4 text-4xl font-bold tracking-tight">Objectif Murrayfield</h1>
-        <p className="text-lg text-gray-600">
-          Paris &rarr; Edinburgh à vélo &mdash; {totalKm} km pour la bonne cause
-        </p>
+        <h1 className="mb-4 text-4xl font-bold tracking-tight">{t.about.title}</h1>
+        <p className="text-lg text-gray-600">{t.about.subtitle}</p>
       </section>
 
       {/* About Hugo */}
       <section className="mb-12">
-        <h2 className="mb-4 text-2xl font-semibold">À propos de Hugo</h2>
+        <h2 className="mb-4 text-2xl font-semibold">{t.about.hugoTitle}</h2>
         <div className="space-y-4 text-gray-700">
-          <p>
-            Hugo est un cycliste passionné qui se lance dans un voyage ambitieux de Paris à Édimbourg.
-            Sur environ {totalKm} km répartis en plusieurs étapes, cette aventure combine sa passion
-            du vélo avec une cause qui lui tient à cœur : récolter des fonds pour l&apos;association
-            «&nbsp;Le Souci des Nôtres&nbsp;».
-          </p>
-          <p>
-            La destination finale ? Le stade de Murrayfield à Édimbourg, pour assister au match
-            Écosse-France du Tournoi des Six Nations. Mais le voyage en lui-même est la vraie
-            aventure &mdash; pédaler à travers la France, traverser la Manche, et remonter
-            l&apos;Angleterre jusqu&apos;en Écosse.
-          </p>
+          <p>{t.about.hugoPara1}</p>
+          <p>{t.about.hugoPara2}</p>
         </div>
       </section>
 
       {/* Why */}
       <section className="mb-12 rounded-xl bg-blue-50 p-6">
-        <h2 className="mb-3 text-xl font-semibold text-blue-900">Pourquoi ?</h2>
-        <p className="text-blue-800">
-          Pour voir le match Écosse-France à Murrayfield et soutenir l&apos;association
-          «&nbsp;Le Souci des Nôtres&nbsp;» &mdash; une association dédiée à l&apos;aide
-          aux plus démunis. Chaque kilomètre compte, sur la route comme en dons récoltés.
-        </p>
+        <h2 className="mb-3 text-xl font-semibold text-blue-900">{t.about.whyTitle}</h2>
+        <p className="text-blue-800">{t.about.whyText}</p>
       </section>
 
       {/* Route overview */}
       <section className="mb-12">
-        <h2 className="mb-6 text-2xl font-semibold">L&apos;itinéraire</h2>
+        <h2 className="mb-6 text-2xl font-semibold">{t.about.routeTitle}</h2>
         <p className="mb-6 text-gray-600">
-          Distance totale estimée : <strong className="text-foreground">{totalKm} km</strong> en 7 étapes
+          {t.about.routeTotal(totalKm)}
         </p>
 
         <div className="space-y-3">
@@ -68,7 +58,7 @@ export default function AboutPage() {
                   {i + 1}
                 </span>
                 <span className="font-medium">
-                  {stage.from} &rarr; {stage.to}
+                  {stage.from} → {stage.to}
                 </span>
                 {stage.note && (
                   <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
@@ -84,7 +74,7 @@ export default function AboutPage() {
 
       {/* Links */}
       <section>
-        <h2 className="mb-4 text-2xl font-semibold">Suivre l&apos;aventure</h2>
+        <h2 className="mb-4 text-2xl font-semibold">{t.about.followTitle}</h2>
         <div className="flex flex-wrap gap-4">
           <a
             href="https://www.instagram.com/hugo_a_velo/"

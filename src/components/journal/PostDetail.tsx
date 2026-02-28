@@ -5,16 +5,20 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { getFingerprint } from '@/lib/utils/fingerprint'
 import type { PostImage, Comment } from '@/lib/supabase/types'
+import type { Lang } from '@/contexts/LanguageContext'
+import { useT } from '@/contexts/LanguageContext'
 
 interface PostDetailProps {
   postId: string
   title: string
+  lang: Lang
   onBack: () => void
   onClose: () => void
 }
 
 interface PostData {
   title_fr: string
+  title_en: string | null
   body_markdown: string
   published_at: string
   location: string | null
@@ -24,7 +28,33 @@ interface PostData {
   banana_count: number
 }
 
-export default function PostDetail({ postId, title, onBack, onClose }: PostDetailProps) {
+// Module-level cache so translations survive re-renders within a session
+const translationCache = new Map<string, string>()
+
+async function translateText(text: string): Promise<string> {
+  if (!text.trim()) return text
+  const cached = translationCache.get(text)
+  if (cached !== undefined) return cached
+
+  try {
+    // Call MyMemory API directly from the browser (supports CORS, free, no auth needed)
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=fr|en`
+    const res = await fetch(url)
+    if (!res.ok) return text
+    const data = await res.json()
+    const translated: string | undefined = data?.responseData?.translatedText
+    if (translated && data?.responseStatus === 200) {
+      translationCache.set(text, translated)
+      return translated
+    }
+  } catch {
+    // Fall back to original text
+  }
+  return text
+}
+
+export default function PostDetail({ postId, title, lang, onBack, onClose }: PostDetailProps) {
+  const t = useT()
   const [post, setPost] = useState<PostData | null>(null)
   const [loading, setLoading] = useState(true)
   const [bananaCount, setBananaCount] = useState(0)
@@ -35,6 +65,11 @@ export default function PostDetail({ postId, title, onBack, onClose }: PostDetai
   const [commentBody, setCommentBody] = useState('')
   const [submittingComment, setSubmittingComment] = useState(false)
   const [currentImage, setCurrentImage] = useState(0)
+
+  // Translated content
+  const [translatedTitle, setTranslatedTitle] = useState<string | null>(null)
+  const [translatedBody, setTranslatedBody] = useState<string | null>(null)
+  const [translating, setTranslating] = useState(false)
 
   // Fetch post details
   useEffect(() => {
@@ -49,7 +84,7 @@ export default function PostDetail({ postId, title, onBack, onClose }: PostDetai
 
         const { data: postData } = await supabase
           .from('posts')
-          .select('title_fr, body_markdown, published_at, location, day')
+          .select('title_fr, title_en, body_markdown, published_at, location, day')
           .eq('id', postId)
           .single()
 
@@ -95,6 +130,37 @@ export default function PostDetail({ postId, title, onBack, onClose }: PostDetai
     load()
     return () => { cancelled = true }
   }, [postId])
+
+  // Translate content when lang switches to EN
+  useEffect(() => {
+    if (!post || lang !== 'en') {
+      setTranslatedTitle(null)
+      setTranslatedBody(null)
+      return
+    }
+
+    let cancelled = false
+    async function doTranslate() {
+      if (!post) return
+      setTranslating(true)
+      try {
+        const [tTitle, tBody] = await Promise.all([
+          post.title_en ? Promise.resolve(post.title_en) : translateText(post.title_fr),
+          post.body_markdown ? translateText(post.body_markdown) : Promise.resolve(''),
+        ])
+        if (!cancelled) {
+          setTranslatedTitle(tTitle)
+          setTranslatedBody(tBody)
+        }
+      } catch (err) {
+        console.error('Translation error:', err)
+      } finally {
+        if (!cancelled) setTranslating(false)
+      }
+    }
+    doTranslate()
+    return () => { cancelled = true }
+  }, [post, lang])
 
   // Give banana
   const handleBanana = useCallback(async () => {
@@ -154,7 +220,6 @@ export default function PostDetail({ postId, title, onBack, onClose }: PostDetai
     if (!touchStart) return
     const dx = Math.abs(e.touches[0].clientX - touchStart.x)
     const dy = Math.abs(e.touches[0].clientY - touchStart.y)
-    // If horizontal movement dominates, prevent vertical scroll
     if (dx > dy && dx > 10) {
       setSwiping(true)
       e.preventDefault()
@@ -183,17 +248,23 @@ export default function PostDetail({ postId, title, onBack, onClose }: PostDetai
   if (!post) {
     return (
       <div className="p-6 text-center text-stone-500">
-        <p>Post introuvable</p>
-        <button onClick={onBack} className="mt-4 text-amber-700 underline">Retour</button>
+        <p>{t.journal.postNotFound}</p>
+        <button onClick={onBack} className="mt-4 text-amber-700 underline">
+          {t.journal.back}
+        </button>
       </div>
     )
   }
 
-  const date = new Date(post.published_at).toLocaleDateString('fr-FR', {
+  const locale = lang === 'en' ? 'en-GB' : 'fr-FR'
+  const date = new Date(post.published_at).toLocaleDateString(locale, {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
   })
+
+  const displayTitle = lang === 'en' ? (translatedTitle ?? post.title_fr) : post.title_fr
+  const displayBody = lang === 'en' ? (translatedBody ?? post.body_markdown) : post.body_markdown
 
   return (
     <div className="flex h-full flex-col">
@@ -237,7 +308,7 @@ export default function PostDetail({ postId, title, onBack, onClose }: PostDetai
                     <button
                       onClick={() => setCurrentImage((i) => i - 1)}
                       className="absolute left-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm transition hover:bg-black/50"
-                      aria-label="Image précédente"
+                      aria-label={t.journal.prevImage}
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="15 18 9 12 15 6" />
@@ -249,7 +320,7 @@ export default function PostDetail({ postId, title, onBack, onClose }: PostDetai
                     <button
                       onClick={() => setCurrentImage((i) => i + 1)}
                       className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm transition hover:bg-black/50"
-                      aria-label="Image suivante"
+                      aria-label={t.journal.nextImage}
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="9 6 15 12 9 18" />
@@ -286,17 +357,24 @@ export default function PostDetail({ postId, title, onBack, onClose }: PostDetai
               {post.day && (
                 <>
                   <span>·</span>
-                  <span>Jour {post.day}</span>
+                  <span>{t.journal.day(post.day!)}</span>
                 </>
               )}
             </div>
 
-            <h1 className="text-xl sm:text-2xl font-bold text-stone-900 mb-4">{post.title_fr}</h1>
+            {translating ? (
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-stone-300 border-t-amber-700" />
+                <span className="text-sm text-stone-400">{t.journal.translating}</span>
+              </div>
+            ) : (
+              <h1 className="text-xl sm:text-2xl font-bold text-stone-900 mb-4">{displayTitle}</h1>
+            )}
 
-            {post.body_markdown && (
+            {displayBody && !translating && (
               <div className="mb-6 text-[15px] leading-relaxed text-stone-700 [&_p]:mb-3 [&_strong]:text-stone-900 [&_a]:text-amber-700 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-stone-800 [&_h2]:mt-5 [&_h2]:mb-2 [&_h3]:font-semibold [&_h3]:text-stone-800 [&_h3]:mt-4 [&_h3]:mb-1 [&_blockquote]:border-l-3 [&_blockquote]:border-amber-300 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-stone-500">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {post.body_markdown}
+                  {displayBody}
                 </ReactMarkdown>
               </div>
             )}
@@ -316,14 +394,16 @@ export default function PostDetail({ postId, title, onBack, onClose }: PostDetai
                 <span>{bananaCount}</span>
               </button>
               <span className="text-sm text-stone-500">
-                {hasGivenBanana ? 'Merci !' : 'Donner une banane'}
+                {hasGivenBanana
+                  ? t.journal.thanks
+                  : t.journal.giveBanana}
               </span>
             </div>
 
             {/* Comments */}
             <div>
               <h3 className="font-semibold text-stone-800 text-sm mb-3">
-                Commentaires ({comments.length})
+                {t.journal.comments(comments.length)}
               </h3>
 
               {comments.length > 0 && (
@@ -333,7 +413,7 @@ export default function PostDetail({ postId, title, onBack, onClose }: PostDetai
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-medium text-stone-800 text-sm">{c.author}</span>
                         <span className="text-xs text-stone-400">
-                          {new Date(c.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                          {new Date(c.created_at).toLocaleDateString(locale, { day: 'numeric', month: 'short' })}
                         </span>
                       </div>
                       <p className="text-sm text-stone-700 leading-relaxed">{c.body}</p>
@@ -346,14 +426,14 @@ export default function PostDetail({ postId, title, onBack, onClose }: PostDetai
               <form onSubmit={handleSubmitComment} className="space-y-2 max-w-md">
                 <input
                   type="text"
-                  placeholder="Votre nom"
+                  placeholder={t.journal.yourName}
                   value={commentAuthor}
                   onChange={(e) => setCommentAuthor(e.target.value)}
                   maxLength={50}
                   className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm text-stone-800 placeholder-stone-400 outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"
                 />
                 <textarea
-                  placeholder="Votre message..."
+                  placeholder={t.journal.yourMessage}
                   value={commentBody}
                   onChange={(e) => setCommentBody(e.target.value)}
                   maxLength={500}
@@ -365,7 +445,9 @@ export default function PostDetail({ postId, title, onBack, onClose }: PostDetai
                   disabled={!commentAuthor.trim() || !commentBody.trim() || submittingComment}
                   className="rounded-lg bg-amber-700 px-6 py-2 text-sm font-semibold text-white transition hover:bg-amber-800 disabled:bg-stone-300 disabled:text-stone-500"
                 >
-                  {submittingComment ? 'Envoi...' : 'Envoyer'}
+                  {submittingComment
+                    ? t.journal.sending
+                    : t.journal.send}
                 </button>
               </form>
             </div>
