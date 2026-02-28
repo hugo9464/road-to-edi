@@ -84,7 +84,7 @@ export default async function HomePage() {
     const coords: [number, number][] = smoothCoordinates(routeJson.features[0].geometry?.coordinates ?? [])
     const boatStartKm: number = routeJson.features[0].properties?.boatStartKm ?? 150
     const boatKm: number = routeJson.features[0].properties?.boatKm ?? 155
-    if (coords.length > 0) kmCovered = nearestPointKm(coords, gps.lat, gps.lng, boatStartKm, boatKm)
+    if (coords.length > 0) kmCovered = Math.max(0, nearestPointKm(coords, gps.lat, gps.lng, boatStartKm, boatKm) - 150)
   }
 
   return (

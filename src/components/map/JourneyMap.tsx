@@ -185,7 +185,7 @@ export default function JourneyMap({
   const kmProgress = useMemo(() => {
     if (!position || coordinates.length === 0) return 0
     const nearestIdx = findNearestPointIndex(coordinates, position.lat, position.lng)
-    return estimateKmProgress(coordinates, nearestIdx, boatStartKm, boatKm)
+    return Math.max(0, estimateKmProgress(coordinates, nearestIdx, boatStartKm, boatKm) - 150)
   }, [position, coordinates, boatStartKm, boatKm])
 
   // Calculate day counter from a start date
