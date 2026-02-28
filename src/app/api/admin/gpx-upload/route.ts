@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server'
+import fs from 'fs/promises'
+import path from 'path'
 import { uploadCustomRoute, deleteCustomRoute } from '@/lib/supabase/route-storage'
 
 function haversineKm([lng1, lat1]: [number, number], [lng2, lat2]: [number, number]): number {
@@ -47,6 +49,19 @@ export async function POST(request: Request) {
     }
 
     const distanceKm = totalDistanceKm(coordinates)
+
+    // Read ferry params from the default route file so they are preserved on GPX upload
+    let boatStartKm = 150, boatKm = 155, boatEndKm = 305
+    try {
+      const defaultRoute = JSON.parse(
+        await fs.readFile(path.join(process.cwd(), 'public', 'data', 'route.geojson'), 'utf-8')
+      )
+      const props = defaultRoute.features?.[0]?.properties ?? {}
+      if (props.boatStartKm) boatStartKm = props.boatStartKm
+      if (props.boatKm) boatKm = props.boatKm
+      boatEndKm = boatStartKm + boatKm
+    } catch { /* use defaults */ }
+
     const routeGeoJson = {
       type: 'FeatureCollection',
       features: [
@@ -55,9 +70,9 @@ export async function POST(request: Request) {
           properties: {
             name: file.name.replace(/\.gpx$/i, ''),
             totalKm: distanceKm,
-            boatKm: 0,
-            boatStartKm: distanceKm + 1,
-            boatEndKm: distanceKm + 1,
+            boatKm,
+            boatStartKm,
+            boatEndKm,
           },
           geometry: { type: 'LineString', coordinates },
         },
