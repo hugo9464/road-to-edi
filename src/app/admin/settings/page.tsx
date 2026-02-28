@@ -5,6 +5,7 @@ import { getCustomRoute } from '@/lib/supabase/route-storage'
 import type { SiteSettings } from '@/lib/supabase/types'
 import SettingsForm from '@/components/admin/SettingsForm'
 import GpxUpload from '@/components/admin/GpxUpload'
+import FerryParams from '@/components/admin/FerryParams'
 
 export default async function AdminSettingsPage() {
   const authed = await isAdminAuthenticated()
@@ -29,10 +30,17 @@ export default async function AdminSettingsPage() {
 
   // Check Storage for a custom route file
   const customRoute = await getCustomRoute()
-  const currentRouteInfo = customRoute?.features?.[0]?.properties
+  const customProps = customRoute?.features?.[0]?.properties ?? null
+  const currentRouteInfo = customProps
     ? {
-        name: String(customRoute.features[0].properties.name ?? 'Trace personnalisée'),
-        totalKm: Number(customRoute.features[0].properties.totalKm ?? 0),
+        name: String(customProps.name ?? 'Trace personnalisée'),
+        totalKm: Number(customProps.totalKm ?? 0),
+      }
+    : null
+  const ferryInfo = customProps
+    ? {
+        boatStartKm: Number(customProps.boatStartKm ?? 150),
+        boatKm: Number(customProps.boatKm ?? 155),
       }
     : null
 
@@ -44,6 +52,11 @@ export default async function AdminSettingsPage() {
         <div className="border-t border-gray-700 pt-6">
           <GpxUpload currentRoute={currentRouteInfo} />
         </div>
+        {ferryInfo && (
+          <div className="border-t border-gray-700 pt-6">
+            <FerryParams boatStartKm={ferryInfo.boatStartKm} boatKm={ferryInfo.boatKm} />
+          </div>
+        )}
       </div>
     </div>
   )
