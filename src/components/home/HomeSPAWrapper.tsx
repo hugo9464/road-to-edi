@@ -7,6 +7,7 @@ import Link from 'next/link'
 import type { GpsPosition, SiteSettings, PostWithCounts } from '@/lib/supabase/types'
 import JournalOverlay from '@/components/journal/JournalOverlay'
 import SharePopup from '@/components/home/SharePopup'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 const HomeMapClient = dynamic(() => import('./HomeMapClient'), {
   ssr: false,
@@ -43,6 +44,7 @@ export default function HomeSPAWrapper({
   day,
   posts,
 }: HomeSPAWrapperProps) {
+  const { lang, toggleLang } = useLanguage()
   const [donationOpen, setDonationOpen] = useState(false)
   const [journalOpen, setJournalOpen] = useState(false)
   const [shareOpen, setShareOpen] = useState(false)
@@ -72,6 +74,19 @@ export default function HomeSPAWrapper({
           posts={mapPosts}
           onPostClick={handlePostClick}
         />
+      </div>
+
+      {/* ── Top-right: Language switcher ── */}
+      <div className="absolute top-4 right-4 z-[1000]">
+        <button
+          onClick={toggleLang}
+          className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm shadow-md text-stone-700 text-xs font-bold hover:bg-white hover:scale-105 transition-all duration-200 border border-stone-200"
+          aria-label="Changer de langue / Switch language"
+        >
+          <span className={lang === 'fr' ? 'text-stone-900' : 'text-stone-400'}>FR</span>
+          <span className="text-stone-300">|</span>
+          <span className={lang === 'en' ? 'text-stone-900' : 'text-stone-400'}>EN</span>
+        </button>
       </div>
 
       {/* ── Top-center: Donation + Instagram & Club logo ── */}

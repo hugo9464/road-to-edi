@@ -4,6 +4,7 @@ import { useState } from 'react'
 import PostCard from './PostCard'
 import PostDetail from './PostDetail'
 import type { PostWithCounts } from '@/lib/supabase/types'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface JournalOverlayProps {
   posts: PostWithCounts[]
@@ -13,6 +14,7 @@ interface JournalOverlayProps {
 
 export default function JournalOverlay({ posts, selectedPostId, onClose }: JournalOverlayProps) {
   const [viewingPostId, setViewingPostId] = useState<string | null>(selectedPostId)
+  const { lang } = useLanguage()
 
   const viewingPost = viewingPostId ? posts.find((p) => p.id === viewingPostId) : null
 
@@ -22,7 +24,8 @@ export default function JournalOverlay({ posts, selectedPostId, onClose }: Journ
         {viewingPostId && viewingPost ? (
           <PostDetail
             postId={viewingPostId}
-            title={viewingPost.title_fr}
+            title={lang === 'en' && viewingPost.title_en ? viewingPost.title_en : viewingPost.title_fr}
+            lang={lang}
             onBack={() => setViewingPostId(null)}
             onClose={onClose}
           />
@@ -31,7 +34,7 @@ export default function JournalOverlay({ posts, selectedPostId, onClose }: Journ
             {/* Header */}
             <div className="flex items-center justify-between bg-white px-4 py-3 border-b border-stone-100 shrink-0">
               <h2 className="font-[family-name:var(--font-lora)] text-lg font-bold text-stone-800">
-                Journal de bord
+                {lang === 'en' ? 'Logbook' : 'Journal de bord'}
               </h2>
               <button
                 onClick={onClose}
@@ -49,7 +52,7 @@ export default function JournalOverlay({ posts, selectedPostId, onClose }: Journ
             <div className="flex-1 overflow-y-auto p-4">
               {posts.length === 0 ? (
                 <p className="text-center text-stone-400 text-sm py-12">
-                  Aucun post pour l&apos;instant...
+                  {lang === 'en' ? 'No posts yet...' : 'Aucun post pour l\'instant...'}
                 </p>
               ) : (
                 <div className="space-y-2">
@@ -57,6 +60,7 @@ export default function JournalOverlay({ posts, selectedPostId, onClose }: Journ
                     <PostCard
                       key={post.id}
                       post={post}
+                      lang={lang}
                       onClick={() => setViewingPostId(post.id)}
                       highlighted={post.id === selectedPostId}
                     />
