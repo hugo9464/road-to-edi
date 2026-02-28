@@ -7,6 +7,7 @@ import 'leaflet/dist/leaflet.css'
 import { createClient } from '@/lib/supabase/client'
 import type { GpsPosition } from '@/lib/supabase/types'
 import { smoothCoordinates } from '@/lib/smoothRoute'
+import { useT } from '@/contexts/LanguageContext'
 
 // Fix Leaflet default icon issue in Next.js
 import L from 'leaflet'
@@ -86,7 +87,7 @@ function RouteLayer({
   const coordinates = useMemo(() => smoothCoordinates(feature.geometry.coordinates), [feature.geometry.coordinates])
   const totalKm = feature.properties.totalKm
 
-  const { completed, remaining, kmProgress } = useMemo(() => {
+  const { completed, remaining } = useMemo(() => {
     if (!position) {
       return {
         completed: [] as LatLngExpression[],
@@ -104,7 +105,7 @@ function RouteLayer({
     )
     const boatStartKm = (feature.properties.boatStartKm as number | undefined) ?? 187
     const boatKm = (feature.properties.boatKm as number | undefined) ?? 122
-    const km = estimateKmProgress(coordinates, nearestIdx, boatStartKm, boatKm)
+    estimateKmProgress(coordinates, nearestIdx, boatStartKm, boatKm)
 
     const completedCoords = coordinates
       .slice(0, nearestIdx + 1)
@@ -113,7 +114,7 @@ function RouteLayer({
       .slice(nearestIdx)
       .map(([lng, lat]) => [lat, lng] as LatLngExpression)
 
-    return { completed: completedCoords, remaining: remainingCoords, kmProgress: km }
+    return { completed: completedCoords, remaining: remainingCoords, kmProgress: 0 }
   }, [coordinates, position, totalKm])
 
   return (
@@ -154,6 +155,7 @@ export default function JourneyMap({
   initialPosition,
   routeGeoJson,
 }: JourneyMapProps) {
+  const t = useT()
   const [position, setPosition] = useState<GpsPosition | null>(initialPosition)
 
   // Supabase Realtime subscription
@@ -225,7 +227,7 @@ export default function JourneyMap({
           {kmProgress} / {totalKm} km
         </p>
         <p className="text-xs text-[#7a6550]">
-          {dayCount > 0 ? `Jour ${dayCount}` : 'Pas encore commencé'}
+          {dayCount > 0 ? t.map.day(dayCount) : t.map.notStarted}
         </p>
       </div>
     </div>

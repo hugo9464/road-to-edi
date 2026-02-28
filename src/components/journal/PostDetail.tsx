@@ -6,6 +6,7 @@ import remarkGfm from 'remark-gfm'
 import { getFingerprint } from '@/lib/utils/fingerprint'
 import type { PostImage, Comment } from '@/lib/supabase/types'
 import type { Lang } from '@/contexts/LanguageContext'
+import { useT } from '@/contexts/LanguageContext'
 
 interface PostDetailProps {
   postId: string
@@ -53,6 +54,7 @@ async function translateText(text: string): Promise<string> {
 }
 
 export default function PostDetail({ postId, title, lang, onBack, onClose }: PostDetailProps) {
+  const t = useT()
   const [post, setPost] = useState<PostData | null>(null)
   const [loading, setLoading] = useState(true)
   const [bananaCount, setBananaCount] = useState(0)
@@ -246,9 +248,9 @@ export default function PostDetail({ postId, title, lang, onBack, onClose }: Pos
   if (!post) {
     return (
       <div className="p-6 text-center text-stone-500">
-        <p>{lang === 'en' ? 'Post not found' : 'Post introuvable'}</p>
+        <p>{t.journal.postNotFound}</p>
         <button onClick={onBack} className="mt-4 text-amber-700 underline">
-          {lang === 'en' ? 'Back' : 'Retour'}
+          {t.journal.back}
         </button>
       </div>
     )
@@ -306,7 +308,7 @@ export default function PostDetail({ postId, title, lang, onBack, onClose }: Pos
                     <button
                       onClick={() => setCurrentImage((i) => i - 1)}
                       className="absolute left-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm transition hover:bg-black/50"
-                      aria-label={lang === 'en' ? 'Previous image' : 'Image précédente'}
+                      aria-label={t.journal.prevImage}
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="15 18 9 12 15 6" />
@@ -318,7 +320,7 @@ export default function PostDetail({ postId, title, lang, onBack, onClose }: Pos
                     <button
                       onClick={() => setCurrentImage((i) => i + 1)}
                       className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm transition hover:bg-black/50"
-                      aria-label={lang === 'en' ? 'Next image' : 'Image suivante'}
+                      aria-label={t.journal.nextImage}
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="9 6 15 12 9 18" />
@@ -355,7 +357,7 @@ export default function PostDetail({ postId, title, lang, onBack, onClose }: Pos
               {post.day && (
                 <>
                   <span>·</span>
-                  <span>{lang === 'en' ? `Day ${post.day}` : `Jour ${post.day}`}</span>
+                  <span>{t.journal.day(post.day!)}</span>
                 </>
               )}
             </div>
@@ -363,7 +365,7 @@ export default function PostDetail({ postId, title, lang, onBack, onClose }: Pos
             {translating ? (
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-stone-300 border-t-amber-700" />
-                <span className="text-sm text-stone-400">Translating…</span>
+                <span className="text-sm text-stone-400">{t.journal.translating}</span>
               </div>
             ) : (
               <h1 className="text-xl sm:text-2xl font-bold text-stone-900 mb-4">{displayTitle}</h1>
@@ -393,15 +395,15 @@ export default function PostDetail({ postId, title, lang, onBack, onClose }: Pos
               </button>
               <span className="text-sm text-stone-500">
                 {hasGivenBanana
-                  ? (lang === 'en' ? 'Thanks!' : 'Merci !')
-                  : (lang === 'en' ? 'Give a banana' : 'Donner une banane')}
+                  ? t.journal.thanks
+                  : t.journal.giveBanana}
               </span>
             </div>
 
             {/* Comments */}
             <div>
               <h3 className="font-semibold text-stone-800 text-sm mb-3">
-                {lang === 'en' ? `Comments (${comments.length})` : `Commentaires (${comments.length})`}
+                {t.journal.comments(comments.length)}
               </h3>
 
               {comments.length > 0 && (
@@ -424,14 +426,14 @@ export default function PostDetail({ postId, title, lang, onBack, onClose }: Pos
               <form onSubmit={handleSubmitComment} className="space-y-2 max-w-md">
                 <input
                   type="text"
-                  placeholder={lang === 'en' ? 'Your name' : 'Votre nom'}
+                  placeholder={t.journal.yourName}
                   value={commentAuthor}
                   onChange={(e) => setCommentAuthor(e.target.value)}
                   maxLength={50}
                   className="w-full rounded-lg border border-stone-200 px-3 py-2 text-sm text-stone-800 placeholder-stone-400 outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"
                 />
                 <textarea
-                  placeholder={lang === 'en' ? 'Your message...' : 'Votre message...'}
+                  placeholder={t.journal.yourMessage}
                   value={commentBody}
                   onChange={(e) => setCommentBody(e.target.value)}
                   maxLength={500}
@@ -444,8 +446,8 @@ export default function PostDetail({ postId, title, lang, onBack, onClose }: Pos
                   className="rounded-lg bg-amber-700 px-6 py-2 text-sm font-semibold text-white transition hover:bg-amber-800 disabled:bg-stone-300 disabled:text-stone-500"
                 >
                   {submittingComment
-                    ? (lang === 'en' ? 'Sending...' : 'Envoi...')
-                    : (lang === 'en' ? 'Send' : 'Envoyer')}
+                    ? t.journal.sending
+                    : t.journal.send}
                 </button>
               </form>
             </div>

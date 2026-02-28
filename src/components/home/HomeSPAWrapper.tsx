@@ -7,13 +7,13 @@ import Link from 'next/link'
 import type { GpsPosition, SiteSettings, PostWithCounts } from '@/lib/supabase/types'
 import JournalOverlay from '@/components/journal/JournalOverlay'
 import SharePopup from '@/components/home/SharePopup'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useLanguage, useT } from '@/contexts/LanguageContext'
 
 const HomeMapClient = dynamic(() => import('./HomeMapClient'), {
   ssr: false,
   loading: () => (
     <div className="flex h-full items-center justify-center bg-stone-100">
-      <p className="text-stone-500 text-sm">Chargement de la carte…</p>
+      <p className="text-stone-500 text-sm">…</p>
     </div>
   ),
 })
@@ -45,6 +45,7 @@ export default function HomeSPAWrapper({
   posts,
 }: HomeSPAWrapperProps) {
   const { lang, toggleLang } = useLanguage()
+  const t = useT()
   const [donationOpen, setDonationOpen] = useState(false)
   const [journalOpen, setJournalOpen] = useState(false)
   const [shareOpen, setShareOpen] = useState(false)
@@ -81,7 +82,7 @@ export default function HomeSPAWrapper({
         <button
           onClick={toggleLang}
           className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm shadow-md text-stone-700 text-xs font-bold hover:bg-white hover:scale-105 transition-all duration-200 border border-stone-200"
-          aria-label="Changer de langue / Switch language"
+          aria-label="Switch language"
         >
           <span className={lang === 'fr' ? 'text-stone-900' : 'text-stone-400'}>FR</span>
           <span className="text-stone-300">|</span>
@@ -98,7 +99,7 @@ export default function HomeSPAWrapper({
         >
           <span className="text-2xl leading-none">🤝</span>
           <br />
-          <span className="text-xs opacity-90">Soutenir l&apos;association</span>
+          <span className="text-xs opacity-90">{t.home.supportAssociation}</span>
           <br />
           <span className="text-sm font-bold tracking-wide">Le Souci des Nôtres</span>
         </button>
@@ -116,7 +117,7 @@ export default function HomeSPAWrapper({
             <svg width="22" height="22" viewBox="0 0 24 24" fill="white" className="shrink-0">
               <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
             </svg>
-            Suivre l&apos;aventure
+            {t.home.followAdventure}
           </a>
 
           {/* Alfortville Rugby (right) */}
@@ -144,7 +145,7 @@ export default function HomeSPAWrapper({
           <button
             onClick={() => setShareOpen(true)}
             className="flex items-center gap-2 px-3 py-2.5 rounded-full bg-stone-700/80 backdrop-blur-sm text-stone-100 text-sm font-semibold shadow-lg hover:bg-stone-800 hover:scale-105 transition-all duration-200"
-            aria-label="Partager"
+            aria-label={t.home.share}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="18" cy="5" r="3" />
@@ -153,7 +154,7 @@ export default function HomeSPAWrapper({
               <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
               <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
             </svg>
-            <span className="hidden sm:inline">Partager</span>
+            <span className="hidden sm:inline">{t.home.share}</span>
           </button>
 
           {/* Journal button */}
@@ -165,7 +166,7 @@ export default function HomeSPAWrapper({
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
             </svg>
-            Journal de bord
+            {t.home.logbook}
             {posts.length > 0 && (
               <span className="bg-amber-50 text-amber-800 text-xs font-bold px-1.5 py-0.5 rounded-full">
                 {posts.length}
@@ -179,7 +180,7 @@ export default function HomeSPAWrapper({
           <div className="flex justify-between text-xs text-stone-400 mb-1.5">
             <span>Paris</span>
             <span className="font-semibold text-stone-700">
-              {kmCovered.toLocaleString('fr-FR')} / {totalKm.toLocaleString('fr-FR')} km
+              {kmCovered.toLocaleString(lang === 'en' ? 'en-GB' : 'fr-FR')} / {totalKm.toLocaleString(lang === 'en' ? 'en-GB' : 'fr-FR')} km
             </span>
             <span>Edinburgh</span>
           </div>
@@ -190,7 +191,7 @@ export default function HomeSPAWrapper({
             />
           </div>
           {day > 0 && (
-            <p className="text-xs text-stone-400 mt-1.5">Jour {day}</p>
+            <p className="text-xs text-stone-400 mt-1.5">{t.home.day(day)}</p>
           )}
         </div>
       </div>
@@ -222,7 +223,7 @@ export default function HomeSPAWrapper({
             <button
               onClick={() => setDonationOpen(false)}
               className="absolute top-4 right-4 text-stone-400 hover:text-stone-600 transition-colors"
-              aria-label="Fermer"
+              aria-label={t.home.close}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -240,7 +241,7 @@ export default function HomeSPAWrapper({
               </h2>
             </div>
             <p className="text-sm text-[#7a6550] leading-relaxed mb-6">
-              «&nbsp;Le Souci des Nôtres&nbsp;», basée à Alfortville, est une association qui lutte contre la pauvreté et la précarité par des actions comme des récoltes et distributions de produits de nécessité mais aussi des maraudes dans Paris.
+              {t.home.associationDesc}
             </p>
             {donationUrl ? (
               <a
@@ -249,7 +250,7 @@ export default function HomeSPAWrapper({
                 rel="noopener noreferrer"
                 className="block w-full text-center py-3 rounded-xl bg-amber-800 text-amber-50 font-semibold hover:bg-amber-900 transition-colors"
               >
-                Faire un don
+                {t.home.donate}
               </a>
             ) : (
               <Link
@@ -257,7 +258,7 @@ export default function HomeSPAWrapper({
                 onClick={() => setDonationOpen(false)}
                 className="block w-full text-center py-3 rounded-xl bg-amber-800 text-amber-50 font-semibold hover:bg-amber-900 transition-colors"
               >
-                Faire un don
+                {t.home.donate}
               </Link>
             )}
           </div>

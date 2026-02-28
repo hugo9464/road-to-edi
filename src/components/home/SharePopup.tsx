@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useT } from '@/contexts/LanguageContext'
 
 interface SharePopupProps {
   onClose: () => void
@@ -9,10 +10,10 @@ interface SharePopupProps {
 const SITE_URL = 'https://road-to-edi.vercel.app'
 
 export default function SharePopup({ onClose }: SharePopupProps) {
+  const t = useT()
   const [copied, setCopied] = useState(false)
 
   const shareUrl = typeof window !== 'undefined' ? window.location.href : SITE_URL
-  const shareText = "Suivez Hugo en vélo de Paris à Édimbourg pour le Tournoi des 6 Nations ! 🚴‍♂️🏉"
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&color=78350f&data=${encodeURIComponent(shareUrl)}`
 
   const handleCopy = async () => {
@@ -21,7 +22,6 @@ export default function SharePopup({ onClose }: SharePopupProps) {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {
-      // Fallback for older browsers
       const input = document.createElement('input')
       input.value = shareUrl
       document.body.appendChild(input)
@@ -38,7 +38,7 @@ export default function SharePopup({ onClose }: SharePopupProps) {
       try {
         await navigator.share({
           title: 'Road to Edinburgh – Objectif Murrayfield',
-          text: shareText,
+          text: t.share.shareText,
           url: shareUrl,
         })
       } catch {
@@ -52,7 +52,7 @@ export default function SharePopup({ onClose }: SharePopupProps) {
   const socialLinks = [
     {
       name: 'WhatsApp',
-      href: `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`,
+      href: `https://wa.me/?text=${encodeURIComponent(t.share.shareText + ' ' + shareUrl)}`,
       bg: '#25D366',
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
@@ -62,7 +62,7 @@ export default function SharePopup({ onClose }: SharePopupProps) {
     },
     {
       name: 'X / Twitter',
-      href: `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+      href: `https://x.com/intent/tweet?text=${encodeURIComponent(t.share.shareText)}&url=${encodeURIComponent(shareUrl)}`,
       bg: '#000000',
       icon: (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
@@ -95,7 +95,7 @@ export default function SharePopup({ onClose }: SharePopupProps) {
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-stone-400 hover:text-stone-600 transition-colors"
-          aria-label="Fermer"
+          aria-label={t.share.close}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="18" y1="6" x2="6" y2="18" />
@@ -105,7 +105,7 @@ export default function SharePopup({ onClose }: SharePopupProps) {
 
         {/* Title */}
         <h2 className="font-[family-name:var(--font-lora)] text-lg font-bold text-amber-900 mb-4 pr-6">
-          Partager l&apos;aventure 🚴‍♂️
+          {t.share.title}
         </h2>
 
         {/* QR Code */}
@@ -114,7 +114,7 @@ export default function SharePopup({ onClose }: SharePopupProps) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={qrUrl}
-              alt="QR code de la page"
+              alt={t.share.qrAlt}
               width={180}
               height={180}
               className="block"
@@ -123,7 +123,7 @@ export default function SharePopup({ onClose }: SharePopupProps) {
         </div>
 
         <p className="text-xs text-stone-400 text-center mb-4">
-          Scannez pour ouvrir la page
+          {t.share.scanQr}
         </p>
 
         {/* Copy link */}
@@ -139,7 +139,7 @@ export default function SharePopup({ onClose }: SharePopupProps) {
                 : 'bg-amber-800 text-amber-50 hover:bg-amber-900'
             }`}
           >
-            {copied ? '✓ Copié' : 'Copier'}
+            {copied ? t.share.copied : t.share.copy}
           </button>
         </div>
 
@@ -174,7 +174,7 @@ export default function SharePopup({ onClose }: SharePopupProps) {
               <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
               <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
             </svg>
-            Partager via…
+            {t.share.shareVia}
           </button>
         )}
       </div>
