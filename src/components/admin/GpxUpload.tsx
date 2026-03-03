@@ -19,6 +19,7 @@ export default function GpxUpload({ currentRoute }: GpxUploadProps) {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [localRoute, setLocalRoute] = useState<RouteInfo | null>(currentRoute)
+  const [isRemaining, setIsRemaining] = useState(false)
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -31,6 +32,7 @@ export default function GpxUpload({ currentRoute }: GpxUploadProps) {
     try {
       const formData = new FormData()
       formData.append('gpx', file)
+      if (isRemaining) formData.append('remaining', 'true')
 
       const res = await fetch('/api/admin/gpx-upload', {
         method: 'POST',
@@ -100,6 +102,24 @@ export default function GpxUpload({ currentRoute }: GpxUploadProps) {
           <div className="text-sm">
             <p className="text-gray-400">Route par défaut (Cergy → Édimbourg)</p>
           </div>
+        )}
+
+        <label className="flex items-center gap-2 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={isRemaining}
+            onChange={(e) => setIsRemaining(e.target.checked)}
+            className="w-4 h-4 rounded accent-blue-500"
+          />
+          <span className="text-sm text-gray-300">
+            Trace partielle (depuis la dernière position GPS)
+          </span>
+        </label>
+
+        {isRemaining && (
+          <p className="text-xs text-yellow-400">
+            La portion déjà parcourue sera conservée depuis la route actuelle jusqu&apos;à la dernière position GPS connue.
+          </p>
         )}
 
         <div className="flex gap-3 flex-wrap">
